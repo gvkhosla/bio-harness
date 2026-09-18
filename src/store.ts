@@ -53,6 +53,29 @@ export type AuditEvent = {
   hash: string;
 };
 
+// SQLite can return SQLITE_BUSY immediately during a journal-mode upgrade even
+// with busy_timeout set. Retry only this idempotent initialization step, never work.
+function enableWal(db: DatabaseSync) {
+  const deadline = Date.now() + 5000;
+  const sleeper = new Int32Array(new SharedArrayBuffer(4));
+  for (;;) {
+    try {
+      db.exec("PRAGMA journal_mode=WAL");
+      return;
+    } catch (error) {
+      if (
+        !(error instanceof Error) ||
+        !("errcode" in error) ||
+        typeof error.errcode !== "number" ||
+        (error.errcode & 0xff) !== 5 ||
+        Date.now() >= deadline
+      )
+        throw error;
+      Atomics.wait(sleeper, 0, 0, 25);
+    }
+  }
+}
+
 /** Snapshot and audit append share one SQLite transaction. No external I/O in mutations. */
 export class Store {
   private db: DatabaseSync;
@@ -60,13 +83,19 @@ export class Store {
     if (path !== ":memory:")
       mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
     this.db = new DatabaseSync(path);
-    this.db
-      .exec(`PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL;
+    try {
+      this.db.exec("PRAGMA busy_timeout=5000");
+      enableWal(this.db);
+      this.db.exec(`PRAGMA synchronous=FULL;
       CREATE TABLE IF NOT EXISTS campaigns (id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT NOT NULL, body TEXT NOT NULL);
       CREATE INDEX IF NOT EXISTS events_campaign ON events(campaign_id, sequence);
       CREATE TRIGGER IF NOT EXISTS events_no_update BEFORE UPDATE ON events BEGIN SELECT RAISE(ABORT, 'Audit events are append-only'); END;
       CREATE TRIGGER IF NOT EXISTS events_no_delete BEFORE DELETE ON events BEGIN SELECT RAISE(ABORT, 'Audit events are append-only'); END;`);
+    } catch (error) {
+      this.db.close();
+      throw error;
+    }
   }
   close() {
     this.db.close();
