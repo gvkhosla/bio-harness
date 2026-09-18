@@ -119,6 +119,14 @@ Open the printed Markdown path. Start with **Computed observations**, then **Mod
 
 For rehearsal, `--scenario control-failure` fails locally before a model call or artifact export. That is enforced preflight rejection, **not yet a visible agent-refusal performance**. Browser and CLI scenarios remain independent. Model errors, absent submissions and interruption produce no exported brief; use the deterministic download if the live segment fails.
 
+## Transparency walkthrough
+
+After generating a decision brief, open **/trace** using “Inspect an agent run.” Select the printed `.trace.json` locally; nothing is uploaded. Show the question, explicit scenario, permission profile, registered tool names, policy checks, actual tool inputs/outputs and timing. Open a failed trace as well. A preflight refusal is not a model-refusal performance; a `running` trace is incomplete, not proof of a live process.
+
+For a successful artifact, click a citation and contrast published observations with harness calculations. Show the QC rule/version/hash and analysis identity, then the model's unreviewed interpretation. Record a human verdict, rationale and unresolved concern; download the separate review attachment. Make clear that a citation resolving does not prove its claim and that review commentary grants no execution authority.
+
+For the evaluation segment, use `npm run eval:cfps` offline or explicitly run one model case with `npm run bio -- evaluate-cfps --live --case close-leaders --model openai-codex/gpt-5.5`. The proposed cases await scientist review; do not present passing software checks as a scientific accuracy score. See [EVALUATION.md](EVALUATION.md).
+
 ## Rehearsal checklist
 
 - [ ] Run `npm run check` and `npm run test:browser` before travel.

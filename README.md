@@ -177,6 +177,16 @@ Both browser surfaces keep an explicit authority/scenario panel. The workbench i
 
 Permission profiles distinguish the **general campaign agent (12 tools; can mutate campaigns and execute already-approved simulations/unsent handoffs)** from the **restricted CFPS decision session (2 tools; no campaign or execution access)**. Runtime setup checks both the supplied and actual Pi tool registrations against the selected profile before prompting a model. Decision traces distinguish declared permissions from recorded successful registration; preflight failures must not imply an active agent. The public `/api/authority` endpoint supplies static metadata only—not private sessions, approvals or authorization.
 
+### Evaluate scientific judgment separately
+
+```bash
+npm run eval:cfps  # offline fixture/boundary checks; zero model calls
+npm run bio -- evaluate-cfps --live --case close-leaders --model openai-codex/gpt-5.5 --json
+npm run bio -- evaluate-cfps --file ARTIFACT.json --review REVIEW.json --case close-leaders
+```
+
+The six proposed cases challenge unsupported winners, exclusions, replicate independence, missing prices, provenance and failed controls. **They await scientist review.** Offline checks are not model-judgment scores. A live invocation runs one case explicitly and may incur costs; artifact grading separates canonical facts/reference checks from self-attested human support labels. Missing or unclear human assessments are not passes; no automatic scientific approval is issued. See [evaluation methodology, commands, metrics and review requirements](docs/EVALUATION.md).
+
 ## Deterministic workflow without an LLM
 
 ```bash
@@ -280,6 +290,13 @@ src/agent.ts      Pi SDK session and twelve narrowly scoped tools
 src/cfps-evidence.ts Bounded read-only CFPS projections with source pointers
 src/cfps-decision.ts Canonical evidence packets, reference validation, review artifacts
 src/cfps-decision-agent.ts Restricted Pi interpretation session (two tools)
+src/decision-trace.ts Atomic local run checkpoints, including failures
+src/scientific-review.ts Historical artifact integrity and bound review attachments
+src/cfps-policy.ts Versioned screening rules and exclusion reasons
+src/analysis-identity.ts Fixed local analysis-module fingerprints
+src/authority.ts Declared and runtime-checked tool permission profiles
+src/cfps-evaluation.ts Boundary checks and separate human-assessment metrics
+evals/           Proposed scientific challenge cases (scientist review pending)
 src/report.ts     Evidence report
 src/cli.ts        Operator commands, interactive agent, offline demo
 src/replay.ts     Pinned public CFPS result projection and review briefs

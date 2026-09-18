@@ -13,6 +13,13 @@ export {
 export type { Plan, Results, Well, Condition } from "./contracts.js";
 export { analyze } from "./analysis.js";
 export {
+  evaluationCases,
+  evaluateCaseBoundaries,
+  evaluateDecisionArtifact,
+} from "./cfps-evaluation.js";
+export { authorityProfile } from "./authority.js";
+export { cfpsPolicy } from "./cfps-policy.js";
+export {
   loadReplay,
   parseReplay,
   decisionBrief,

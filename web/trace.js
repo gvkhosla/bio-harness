@@ -18,13 +18,29 @@ export async function textDigest(text) {
 }
 export function inspectJson(label, value) {
   const details = make("details");
+  const text = JSON.stringify(value, null, 2) ?? "Not recorded";
   details.append(
     make("summary", label),
-    make("pre", JSON.stringify(value, null, 2)),
+    make(
+      "pre",
+      text.length > 100000
+        ? `${text.slice(0, 100000)}\n[Display truncated at 100000 characters; inspect the original local file for the remainder.]`
+        : text,
+    ),
   );
   return details;
 }
 async function validate(record) {
+  const pending = [[record, 0]];
+  let visited = 0;
+  while (pending.length) {
+    const [value, depth] = pending.pop();
+    if (++visited > 50000 || depth > 30)
+      throw new Error("Record exceeds the viewer's structural limits.");
+    if (value && typeof value === "object")
+      for (const child of Object.values(value))
+        pending.push([child, depth + 1]);
+  }
   if (
     !record ||
     record.format !== "bio-harness.decision-trace.v1" ||
@@ -72,7 +88,12 @@ function render(record) {
   $("run-facts").replaceChildren(
     ...Object.entries(facts).flatMap(([label, value]) => [
       make("dt", label),
-      make("dd", String(value)),
+      make(
+        "dd",
+        String(value).length > 4000
+          ? `${String(value).slice(0, 4000)} [display truncated]`
+          : String(value),
+      ),
     ]),
   );
   $("timeline").replaceChildren(

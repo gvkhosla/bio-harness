@@ -1,6 +1,6 @@
 {
   "name": "bio-harness",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": true,
   "description": "Pi-powered, approval-gated biological experiment campaigns",
   "license": "Apache-2.0",
@@ -37,6 +37,7 @@
     "demo:web": "tsx src/demo-server.ts",
     "demo:record": "node --import tsx scripts/record-demo.mjs",
     "test:browser": "playwright test",
+    "eval:cfps": "tsx src/cli.ts evaluate-cfps",
     "test": "tsx --test test/*.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",

@@ -31,6 +31,9 @@ Pi-powered scientific campaigns. No live instrument control or paid lab ordering
   bio audit CAMPAIGN                         Verify hash-linked event history
   bio agent "Research request"               Pi agent, or interactive when no request
   bio cfps-brief "Decision question"          Restricted Pi decision brief (--scenario original --strategy confirm|explore)
+  bio evaluate-cfps                          Offline boundary checks (no model)
+  bio evaluate-cfps --file ARTIFACT --review REVIEW  Grade references + self-attested review
+  bio evaluate-cfps --live --case CASE_ID     Run one proposed evaluation case (model costs)
 
 Options: --dir PATH (default .bio or BIO_HOME), --model provider/id, --json
 Agent uses Pi auth or provider API-key environment variables. API calls may cost money.
@@ -67,6 +70,9 @@ async function main() {
       backend: { type: "string", default: "simulator" },
       scenario: { type: "string", default: "original" },
       strategy: { type: "string", default: "confirm" },
+      review: { type: "string" },
+      case: { type: "string" },
+      live: { type: "boolean", default: false },
       json: { type: "boolean", default: false },
       help: { type: "boolean", short: "h" },
     },
@@ -76,6 +82,8 @@ async function main() {
     console.log(help);
     return;
   }
+  if (values.live && command !== "evaluate-cfps")
+    throw new Error("--live is only supported by evaluate-cfps");
   if (command === "capabilities") {
     console.log(JSON.stringify(capabilities, null, 2));
     return;
@@ -93,9 +101,44 @@ async function main() {
     return;
   }
   const stateDir = resolve(values.dir ?? process.env.BIO_HOME ?? ".bio");
-  if (command === "cfps-brief") {
-    const question = required(first, "decision question");
-    if (positionals.length !== 2)
+  let evaluation:
+    | ReturnType<(typeof import("./cfps-evaluation.js"))["evaluationCase"]>
+    | undefined;
+  if (command === "evaluate-cfps") {
+    const { evaluateCaseBoundaries, evaluateDecisionArtifact, evaluationCase } =
+      await import("./cfps-evaluation.js");
+    if (positionals.length !== 1)
+      throw new Error(
+        "Evaluation takes named options, not positional questions",
+      );
+    if (values.live) {
+      if (values.file || values.review)
+        throw new Error(
+          "--live cannot be combined with artifact/review inputs",
+        );
+      evaluation = evaluationCase(required(values.case, "--case"));
+    } else {
+      if (values.review && !values.file)
+        throw new Error("--review requires --file ARTIFACT");
+      const result = values.file
+        ? evaluateDecisionArtifact(
+            loadJson(values.file),
+            values.review ? loadJson(values.review) : undefined,
+            values.case,
+          )
+        : values.case
+          ? evaluationCase(values.case)
+          : evaluateCaseBoundaries();
+      console.log(JSON.stringify(result, null, 2));
+      if ("allBoundariesPassed" in result && !result.allBoundariesPassed)
+        process.exitCode = 1;
+      return;
+    }
+  }
+  if (command === "cfps-brief" || evaluation) {
+    const question =
+      evaluation?.request.question ?? required(first, "decision question");
+    if (!evaluation && positionals.length !== 2)
       throw new Error("Quote the decision question as a single argument");
     const { generateDecisionBrief } = await import("./cfps-decision-agent.js");
     const { decisionMarkdown } = await import("./cfps-decision.js");
@@ -103,7 +146,7 @@ async function main() {
       "CFPS brief: model calls may incur costs; your question and public evidence go to the selected model. No campaign or execution tools.",
     );
     const { DecisionTrace, traceError } = await import("./decision-trace.js");
-    const request = {
+    const request = evaluation?.request ?? {
       question,
       scenario: values.scenario,
       strategy: values.strategy,
@@ -131,7 +174,26 @@ async function main() {
         `${name}.md`,
         decisionMarkdown(artifact),
       );
+      let evaluationPath: string | null = null;
+      if (evaluation) {
+        const { evaluateDecisionArtifact } = await import(
+          "./cfps-evaluation.js"
+        );
+        evaluationPath = saveArtifact(
+          stateDir,
+          `${name}.evaluation.json`,
+          JSON.stringify(
+            evaluateDecisionArtifact(artifact, undefined, evaluation.id),
+            null,
+            2,
+          ) + "\n",
+        );
+        console.error(
+          `Evaluation: ${evaluationPath} · semantic judgment still requires human review`,
+        );
+      }
       const result = {
+        evaluation: evaluationPath,
         trace: trace.path,
         status: artifact.brief.status,
         artifactHash: artifact.artifactHash,
@@ -140,7 +202,11 @@ async function main() {
         generation: artifact.generation,
         validation: artifact.brief.validation,
       };
-      exported({ json: jsonPath, markdown: markdownPath });
+      exported({
+        json: jsonPath,
+        markdown: markdownPath,
+        evaluation: evaluationPath,
+      });
       trace.finish("completed", artifact);
       if (values.json) console.log(JSON.stringify(result, null, 2));
       else
@@ -151,6 +217,28 @@ async function main() {
       const failed = trace.start("run-failure");
       failed({ error: traceError(error) }, true);
       trace.finish("failed");
+      if (
+        evaluation?.expectedBoundary === "blocked-before-model" &&
+        error instanceof Error &&
+        error.message.startsWith("QC blocked:")
+      ) {
+        console.log(
+          JSON.stringify(
+            {
+              caseId: evaluation.id,
+              observed: "blocked-before-model",
+              trace: trace.path,
+              modelCalls: 0,
+              scientificJudgmentScore: null,
+              notice:
+                "Expected harness preflight refusal, not an evaluation of model judgment. No brief exported.",
+            },
+            null,
+            2,
+          ),
+        );
+        return;
+      }
       throw error;
     }
     return;

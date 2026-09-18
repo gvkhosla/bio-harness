@@ -67,6 +67,19 @@ for (const width of [1440, 390]) {
       "NOT semantically validated",
     );
     await page
+      .getByRole("navigation", { name: "Run sections" })
+      .getByRole("link", { name: "Timeline", exact: true })
+      .click();
+    await expect(page.locator("#timeline-title")).toBeInViewport();
+    expect(
+      await page.evaluate(
+        () =>
+          document.getElementById("timeline-title")!.getBoundingClientRect()
+            .top >=
+          document.querySelector(".trace-nav")!.getBoundingClientRect().bottom,
+      ),
+    ).toBe(true);
+    await page
       .getByRole("button", { name: "Inspect well:J21", exact: true })
       .first()
       .click();

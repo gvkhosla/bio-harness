@@ -332,7 +332,7 @@ test("artifact contains immutable canonical evidence, model attribution and esca
   );
 });
 
-test("blocked QC and bad CLI inputs fail before model initialization, writes, or campaign access", () => {
+test("blocked QC and bad CLI inputs retain failure traces without model initialization or campaign access", () => {
   assert.throws(
     () => createDecisionRun({ ...request, scenario: "control-failure" }),
     /QC blocked/,

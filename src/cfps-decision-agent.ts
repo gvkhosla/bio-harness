@@ -167,7 +167,7 @@ export async function generateDecisionBrief(
   const initialized = trace?.start("model-initialization", {
     requested: modelName ?? process.env.BIO_MODEL ?? "auto",
   });
-  let session: Awaited<ReturnType<typeof createScopedSession>>;
+  let session!: Awaited<ReturnType<typeof createScopedSession>>;
   try {
     session = await createScopedSession(
       run.tools,
@@ -191,6 +191,7 @@ export async function generateDecisionBrief(
     trace?.model(identity);
     initialized?.(identity);
   } catch (error) {
+    session?.dispose();
     initialized?.({ error: traceError(error) }, true);
     throw error;
   }

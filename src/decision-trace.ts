@@ -16,7 +16,8 @@ const digest = (value: unknown) =>
   createHash("sha256").update(JSON.stringify(value)).digest("hex");
 function capture(value: unknown): unknown {
   const text = JSON.stringify(value ?? null);
-  // Only tool I/O and runner metadata are recorded; never model thinking or credentials.
+  // Only tool I/O and runner metadata; no thinking stream or credential-store reads.
+  // Questions and tool payloads can still contain sensitive user-supplied text.
   if (text.length > 100000)
     return {
       truncated: true,
@@ -68,7 +69,7 @@ export class DecisionTrace {
   private persist() {
     const record = { ...this.data, traceHash: digest(this.data) };
     const temporary = `${this.path}.tmp`;
-    writeFileSync(temporary, JSON.stringify(record, null, 2) + "\n", {
+    writeFileSync(temporary, JSON.stringify(record) + "\n", {
       mode: 0o600,
     });
     renameSync(temporary, this.path);

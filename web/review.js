@@ -120,7 +120,10 @@ function inspect(ref, focus = false) {
   );
   $("cited-evidence").replaceChildren(...nodes);
   $("evidence-select").value = ref;
-  if (focus) $("cited-evidence").focus();
+  if (focus) {
+    $("cited-evidence").focus({ preventScroll: true });
+    $("cited-evidence").scrollIntoView({ block: "start" });
+  }
 }
 function render() {
   $("statements").replaceChildren();

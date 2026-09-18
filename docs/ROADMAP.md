@@ -16,6 +16,15 @@ This is a direction for contributors, not a promise of dates or capabilities. Di
 
 The replay remains separate from the original phenotype workflow. General-agent CFPS tools are inspection-only; the new `cfps-brief` command uses a separate two-tool session without campaign, approval or execution access. Citation resolution is not semantic validation; interpretation requires scientific review. Failed QC blocks brief generation before a model call. A dedicated visible agent-refusal demonstration is the next slice. None of this is a provider-qualified protocol or live execution integration.
 
+## Transparency increments: v0.2.3–v0.2.7
+
+- [x] Durable local traces for successful, failed and incomplete decision runs, with a browser-only timeline viewer.
+- [x] Separate published observations, harness calculations, unreviewed interpretation and hash-bound human review attachments.
+- [x] Versioned local QC rules, explicit exclusion explanations, checks and analysis-module identity.
+- [x] Visible permission/scenario profiles with exact Pi tool-registration enforcement.
+- [x] Proposed adversarial scientific-judgment cases, offline boundary checks, opt-in single-case model runs and claim-level human-assessment metrics.
+- [ ] Independent scientist review of the case set, acceptance criteria and interpretations. No scientific benchmark validation is claimed.
+
 ## Foundation: v0.1
 
 - [x] Local CLI and TypeScript SDK.

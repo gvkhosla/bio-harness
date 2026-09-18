@@ -7,6 +7,25 @@
 }
 .trace-main h2 {
   margin-bottom: 14px;
+  scroll-margin-top: 150px;
+}
+.trace-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  margin-bottom: 24px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+}
+.trace-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 6px 8px;
 }
 .trace-main h3 {
   margin-top: 18px;
@@ -110,6 +129,7 @@
 }
 #cited-evidence {
   margin-top: 20px;
+  scroll-margin-top: 150px;
 }
 #cited-evidence:focus {
   outline: 2px solid var(--focus);
