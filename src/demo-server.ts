@@ -12,6 +12,7 @@ import {
 import { Store } from "./store.js";
 import { Harness } from "./harness.js";
 import { examplePlan } from "./contracts.js";
+import { authorityProfile } from "./authority.js";
 
 export function approvalGateProof() {
   const store = new Store(":memory:");
@@ -97,6 +98,10 @@ export async function startDemoServer(
     "/trace.js": { file: "trace.js", mime: "text/javascript; charset=utf-8" },
     "/trace.css": { file: "trace.css", mime: "text/css; charset=utf-8" },
     "/review.js": { file: "review.js", mime: "text/javascript; charset=utf-8" },
+    "/authority.js": {
+      file: "authority.js",
+      mime: "text/javascript; charset=utf-8",
+    },
     "/icon.svg": { file: "icon.svg", mime: "image/svg+xml" },
     "/styles.css": { file: "styles.css", mime: "text/css; charset=utf-8" },
   };
@@ -148,6 +153,16 @@ export async function startDemoServer(
       const replay = reports[scenario as Scenario];
       if (url.pathname === "/api/replay") {
         json(200, replay);
+        return;
+      }
+      if (url.pathname === "/api/authority") {
+        json(200, {
+          kind: "static permission profiles, not active sessions or approvals",
+          profiles: [
+            authorityProfile("cfps-decision"),
+            authorityProfile("campaign"),
+          ],
+        });
         return;
       }
       if (url.pathname === "/api/gates") {

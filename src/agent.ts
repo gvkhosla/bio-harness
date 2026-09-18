@@ -11,6 +11,7 @@ import {
   type ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
 import { examplePlan } from "./contracts.js";
+import { authorityProfile, type AuthorityScope } from "./authority.js";
 import type { Harness } from "./harness.js";
 import { cfpsPlate, cfpsCondition, cfpsWell } from "./cfps-evidence.js";
 
@@ -44,6 +45,7 @@ export function biologyTools(harness: Harness) {
       execute: async () =>
         output({
           capabilities: harness.capabilities(),
+          authority: authorityProfile("campaign"),
           examplePlan: examplePlan(),
           cfpsEvidence: {
             mode: "read-only published-example replay, separate from phenotype campaigns",
@@ -241,7 +243,12 @@ export async function createScopedSession(
   systemPrompt: string,
   stateDir: string,
   modelName?: string,
+  scope: AuthorityScope = "campaign",
 ) {
+  authorityProfile(
+    scope,
+    tools.map((tool) => tool.name),
+  );
   const cwd = join(stateDir, "agent");
   const sessions = join(stateDir, "sessions");
   mkdirSync(cwd, { recursive: true, mode: 0o700 });
@@ -306,6 +313,15 @@ export async function createScopedSession(
     customTools: tools,
     sessionManager: SessionManager.create(cwd, sessions),
   });
+  try {
+    authorityProfile(
+      scope,
+      session.agent.state.tools.map((tool) => tool.name),
+    );
+  } catch (error) {
+    session.dispose();
+    throw error;
+  }
   return session;
 }
 

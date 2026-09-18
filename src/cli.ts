@@ -360,7 +360,7 @@ async function main() {
         const rl = createInterface({ input: stdin, output: stdout });
         try {
           console.log(
-            `BIO HARNESS · ${session.model?.provider}/${session.model?.id}\nModel calls may incur costs. Campaign data used by tools is sent to this model.\nNo shell, approval, or live laboratory tools. /quit to leave.\n`,
+            `BIO HARNESS · ${session.model?.provider}/${session.model?.id}\nModel calls may incur costs. Campaign data used by tools is sent to this model.\nGeneral campaign agent: can mutate campaigns and run already-approved simulations/unsent handoffs. Existing approvals must be inspected; this message grants none.\nNo shell, approval, import, or live laboratory tools. /quit to leave.\n`,
           );
           const ask = async (message: string) => {
             await promptWithLimits(session, message, (text) =>

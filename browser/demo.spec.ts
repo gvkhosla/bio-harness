@@ -14,6 +14,18 @@ test("evidence selection, provenance, downloads, gate proof and QC recovery work
   await expect(page.locator("#screen-state")).toHaveText(
     "Reviewable · local screen",
   );
+  await expect(page.getByLabel("Authority and scenario")).toContainText(
+    "offline public replay",
+  );
+  await page
+    .getByText("Compare agent permission profiles", { exact: true })
+    .click();
+  await expect(page.locator("#authority-profiles")).toContainText(
+    "This agent is NOT read-only",
+  );
+  await page
+    .getByText("Compare agent permission profiles", { exact: true })
+    .click();
   await expect(page.locator("#plate button")).toHaveCount(384);
   await expect(page.locator("#well-detail")).toContainText("sample 9");
   await page
@@ -54,6 +66,12 @@ test("evidence selection, provenance, downloads, gate proof and QC recovery work
   );
   await page.getByRole("button", { name: "Inject control failure" }).click();
   await expect(page.locator("#screen-state")).toHaveText("QC blocked");
+  await expect(page.locator("#authority-scenario")).toContainText(
+    "control-failure",
+  );
+  await expect(page.locator("#authority-scenario")).toContainText(
+    "Does not change an agent",
+  );
   await expect(
     page.getByRole("button", { name: "Download review brief" }),
   ).toBeDisabled();

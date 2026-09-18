@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/trace.css" />
     <script type="module" src="/trace.js"></script>
     <script type="module" src="/review.js"></script>
+    <script type="module" src="/authority.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#trace-main">Skip to decision trace</a>
@@ -17,6 +18,22 @@
       ><span class="environment">Local review · no execution</span
       ><a href="/">Evidence workbench</a>
     </header>
+    <aside class="authority-strip" aria-label="Authority and scenario">
+      <strong>This surface: local file review only.</strong>
+      <p>
+        No campaign access, approval or execution controls. Review notes are
+        commentary, not permission to act.
+      </p>
+      <p id="authority-scenario">
+        No run selected. The workbench selector is independent.
+      </p>
+      <p id="authority-record">No session registration inspected.</p>
+      <details>
+        <summary>Compare agent permission profiles</summary>
+        <p>Static profiles, not live sessions or approval records.</p>
+        <div id="authority-profiles">Loading permission metadata…</div>
+      </details>
+    </aside>
     <main id="trace-main" class="trace-main">
       <section class="intro">
         <div>

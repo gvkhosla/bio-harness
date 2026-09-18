@@ -171,6 +171,12 @@ Each well now records triggered rule IDs, source-versus-injected reasons, and wh
 
 The replay, evidence tools and decision packets carry the same **versioned local QC policy and policy hash**, with explicit control/calibration checks. Decision packets and reports also record the analysis contract, package version and hashes of the fixed local analysis module files. These file hashes are not signed proof of loaded bytecode; source TypeScript and built JavaScript differ. Historic review attachments remain bound to their original artifacts, never silently recalculated under newer policy. This remains our demo screening policy, not Ginkgo acceptance.
 
+### See the authority boundary
+
+Both browser surfaces keep an explicit authority/scenario panel. The workbench is an offline replay; the trace viewer is local file review. Neither approves CFPS work or sends orders. Their selectors do not silently change another session's scenario.
+
+Permission profiles distinguish the **general campaign agent (12 tools; can mutate campaigns and execute already-approved simulations/unsent handoffs)** from the **restricted CFPS decision session (2 tools; no campaign or execution access)**. Runtime setup checks both the supplied and actual Pi tool registrations against the selected profile before prompting a model. Decision traces distinguish declared permissions from recorded successful registration; preflight failures must not imply an active agent. The public `/api/authority` endpoint supplies static metadata only—not private sessions, approvals or authorization.
+
 ## Deterministic workflow without an LLM
 
 ```bash

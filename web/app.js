@@ -307,6 +307,10 @@ async function load(nextScenario = scenario) {
     const data = await request(api("/api/replay"));
     if (version !== sequence) return;
     report = data;
+    document.body.dataset.scenario = scenario;
+    document.dispatchEvent(
+      new CustomEvent("replay-scenario-loaded", { detail: scenario }),
+    );
     showAll = false;
     const blocked = report.qc.status === "blocked";
     document.body.classList.toggle("failure", blocked);

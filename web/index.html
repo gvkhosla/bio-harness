@@ -8,6 +8,7 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
     <script type="module" src="/app.js"></script>
+    <script type="module" src="/authority.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to evidence</a>
@@ -22,6 +23,21 @@
         >Project source</a
       >
     </header>
+    <aside class="authority-strip" aria-label="Authority and scenario">
+      <strong>This surface: offline public replay.</strong>
+      <p>
+        No CFPS approval or order. The gate proof is a separate synthetic
+        self-test, not approval of this plate.
+      </p>
+      <p id="authority-scenario">
+        Browser scenario loading. Agent sessions are independent.
+      </p>
+      <details>
+        <summary>Compare agent permission profiles</summary>
+        <p>Static profiles, not live sessions or approval records.</p>
+        <div id="authority-profiles">Loading permission metadata…</div>
+      </details>
+    </aside>
     <main>
       <section class="intro" aria-labelledby="page-title">
         <div>

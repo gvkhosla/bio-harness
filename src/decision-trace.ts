@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { authorityProfile } from "./authority.js";
 
 type Event = {
   sequence: number;
@@ -46,6 +47,10 @@ export class DecisionTrace {
     status: "running" as "running" | "completed" | "failed",
     request: null as unknown,
     model: null as unknown,
+    authority: {
+      declared: authorityProfile("cfps-decision"),
+      registered: null as ReturnType<typeof authorityProfile> | null,
+    },
     events: [] as Event[],
     artifact: null as unknown,
     elapsedMs: null as number | null,
@@ -106,6 +111,10 @@ export class DecisionTrace {
       );
       finished = true;
     };
+  }
+  registeredAuthority(profile: ReturnType<typeof authorityProfile>) {
+    this.data.authority.registered = structuredClone(profile);
+    this.persist();
   }
   model(identity: unknown) {
     this.data.model = capture(identity);

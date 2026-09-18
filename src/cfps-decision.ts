@@ -2,6 +2,7 @@ import { z } from "zod";
 import { hash } from "./contracts.js";
 import { loadReplay } from "./replay.js";
 import { cfpsCondition } from "./cfps-evidence.js";
+import { authorityProfile } from "./authority.js";
 
 const paragraph = z
   .string()
@@ -109,6 +110,7 @@ export function prepareDecisionPacket(input: unknown) {
   const body = {
     format: "bio-harness.cfps-decision-packet.v1",
     request,
+    authority: authorityProfile("cfps-decision"),
     policy: replay.qc.policyManifest,
     software: replay.software,
     source: {

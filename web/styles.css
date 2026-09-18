@@ -158,6 +158,37 @@ caption {
 .masthead > a:last-child {
   font-size: 12px;
 }
+.authority-strip {
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+  font-size: 13px;
+}
+.authority-strip p {
+  margin-top: 6px;
+  max-width: 100ch;
+  overflow-wrap: anywhere;
+}
+.authority-strip details {
+  margin-top: 10px;
+}
+#authority-profiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 16px;
+}
+#authority-profiles section {
+  min-width: 0;
+}
+@media (max-width: 760px) {
+  .authority-strip {
+    padding: 16px;
+  }
+  #authority-profiles {
+    grid-template-columns: 1fr;
+  }
+}
 main {
   max-width: 1640px;
   margin: auto;

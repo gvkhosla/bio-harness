@@ -1,6 +1,7 @@
 import { Type } from "typebox";
 import { DecisionTrace, traceError } from "./decision-trace.js";
 import { cfpsPolicy } from "./cfps-policy.js";
+import { authorityProfile } from "./authority.js";
 import { analysisIdentity } from "./analysis-identity.js";
 import { defineTool } from "@earendil-works/pi-coding-agent";
 import { createScopedSession, promptWithLimits } from "./agent.js";
@@ -173,6 +174,13 @@ export async function generateDecisionBrief(
       briefPrompt,
       stateDir,
       modelName,
+      "cfps-decision",
+    );
+    trace?.registeredAuthority(
+      authorityProfile(
+        "cfps-decision",
+        session.agent.state.tools.map((tool) => tool.name),
+      ),
     );
     const identity = {
       provider: session.model?.provider,
