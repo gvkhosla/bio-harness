@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/trace.css" />
     <script type="module" src="/trace.js"></script>
+    <script type="module" src="/review.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#trace-main">Skip to decision trace</a>
@@ -58,6 +59,89 @@
             active.
           </p>
         </section>
+        <section aria-labelledby="layers-title">
+          <h2 id="layers-title">Keep the kinds of evidence separate.</h2>
+          <dl class="run-facts">
+            <dt>Published observations</dt>
+            <dd>
+              Source-reported measurements and flags, not provider-authenticated
+              results.
+            </dd>
+            <dt>Harness calculations</dt>
+            <dd>
+              Descriptive statistics and local screening decisions, not
+              significance.
+            </dd>
+            <dt>Model interpretation</dt>
+            <dd>
+              Unreviewed prose. A resolved citation does not prove its claim.
+            </dd>
+            <dt>Human review</dt>
+            <dd>
+              Separate, self-attested commentary bound to the exact artifact—not
+              approval.
+            </dd>
+          </dl>
+          <p id="artifact-status" role="status">
+            No decision artifact in this run.
+          </p>
+        </section>
+        <div id="artifact-review" hidden>
+          <section aria-labelledby="interpretation-title">
+            <h2 id="interpretation-title">
+              Model interpretation · unreviewed by default
+            </h2>
+            <p>
+              Assess whether each reference actually supports the statement.
+              Reference resolution is not semantic validation. Select a citation
+              to inspect its recorded evidence.
+            </p>
+            <div id="statements"></div>
+            <h3>Future evidence that could change the judgment</h3>
+            <ul id="future-evidence"></ul>
+          </section>
+          <section aria-labelledby="evidence-title">
+            <h2 id="evidence-title">Inspect cited evidence</h2>
+            <label for="evidence-select">Evidence reference</label
+            ><select id="evidence-select"></select>
+            <div id="cited-evidence" tabindex="-1"></div>
+          </section>
+          <section aria-labelledby="human-title">
+            <h2 id="human-title">Human review · separate from the model</h2>
+            <p id="human-status" role="status">
+              No human review loaded. Commentary is not execution approval.
+            </p>
+            <form id="review-form">
+              <label for="reviewer">Reviewer name (self-attested)</label
+              ><input id="reviewer" required maxlength="120" />
+              <label for="concerns">Unresolved concerns and review limits</label
+              ><textarea
+                id="concerns"
+                required
+                maxlength="3000"
+                rows="4"
+                aria-describedby="review-help"
+              ></textarea>
+              <p id="review-help">
+                Choose a verdict and explain each reviewed statement above.
+                Leave unexamined statements “Not reviewed.” If no concerns were
+                identified, state the scope you actually checked. Identity and
+                qualifications are not authenticated.
+              </p>
+              <button class="primary" type="submit">
+                Download review notes
+              </button>
+            </form>
+            <label for="review-file"
+              >Reopen review notes for this artifact</label
+            ><input
+              id="review-file"
+              type="file"
+              accept=".json,application/json"
+              aria-describedby="human-status"
+            />
+          </section>
+        </div>
         <section aria-labelledby="timeline-title">
           <h2 id="timeline-title">Run timeline</h2>
           <p>

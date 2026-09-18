@@ -161,6 +161,10 @@ Use `--model provider/id`, `--dir PATH`, or `--json` as needed. Authentication, 
 
 Start `npm run demo:web`, open **http://127.0.0.1:4310/trace**, and choose the printed trace file. The viewer checks its content hash and renders it as text, entirely in the browser; no file upload, private workspace endpoint, model call or execution is added. Records are unsigned and may contain private questions or tool arguments; inspect before sharing. Refresh clears the viewer.
 
+The viewer separates recorded published observations, harness calculations, model interpretation and human commentary. Click a model citation to inspect source values/pointers separately from eligibility decisions. Artifact hashes and citation identities are checked locally; neither establishes truth or provider provenance.
+
+Human review is a **separate attachment**, bound to the exact artifact hash. For each statement, record supported/unsupported/unclear or leave it unreviewed, with a rationale and unresolved concerns. Download/reopen the review JSON in the viewer. Reviewer identity is self-attested, not authenticated; no review status authorizes execution or changes the original evidence. Partially reviewed artifacts remain explicitly partial. Historical records are integrity-checked, not silently recomputed under today's analysis policy.
+
 ## Deterministic workflow without an LLM
 
 ```bash

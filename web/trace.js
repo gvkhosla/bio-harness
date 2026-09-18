@@ -5,9 +5,12 @@ export const make = (tag, text) => {
 };
 export const $ = (id) => document.getElementById(id);
 export async function jsonDigest(value) {
+  return textDigest(JSON.stringify(value));
+}
+export async function textDigest(text) {
   const digest = await crypto.subtle.digest(
     "SHA-256",
-    new TextEncoder().encode(JSON.stringify(value)),
+    new TextEncoder().encode(text),
   );
   return [...new Uint8Array(digest)]
     .map((b) => b.toString(16).padStart(2, "0"))

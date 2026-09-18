@@ -25,6 +25,11 @@ export {
   decisionArtifact,
   decisionMarkdown,
 } from "./cfps-decision.js";
+export {
+  readDecisionArtifact,
+  readScientificReview,
+  reviewStatements,
+} from "./scientific-review.js";
 export type {
   DecisionRequest,
   DecisionPacket,
