@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a reproducible problem using synthetic data.
+title: "bug: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For vulnerabilities, use the private process in SECURITY.md.
+        Do not upload secrets, .bio/ contents, model transcripts, donor/patient information, or proprietary experimental data.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe expected versus actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include commands and a small synthetic fixture if relevant. Redact paths and identifying information.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Commit, operating system, node --version, npm --version"
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: What have you checked?
+      description: Does the offline demo or npm run check fail? Include only redacted errors.

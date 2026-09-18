@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "title": "Phenotype response pilot",
+  "question": "Which candidate condition has the strongest reproducible readout?",
+  "hypothesis": "An intermediate normalized factor level will maximize the readout.",
+  "backend": "simulator",
+  "workflow": "phenotype-screen-v1",
+  "sample": {
+    "model": "Synthetic cell-phenotype fixture",
+    "source": "Local simulator; no physical samples",
+    "biosafetyReview": "Simulation only. Provider review required before any real work."
+  },
+  "endpoint": {
+    "name": "phenotype_score",
+    "unit": "a.u.",
+    "direction": "maximize"
+  },
+  "conditions": [
+    {
+      "id": "vehicle",
+      "label": "Negative control",
+      "role": "negative_control",
+      "level": 0
+    },
+    {
+      "id": "reference",
+      "label": "Positive control",
+      "role": "positive_control",
+      "level": 1
+    },
+    {
+      "id": "low",
+      "label": "Candidate A",
+      "role": "test",
+      "level": 0.2
+    },
+    {
+      "id": "mid",
+      "label": "Candidate B",
+      "role": "test",
+      "level": 0.5
+    },
+    {
+      "id": "high",
+      "label": "Candidate C",
+      "role": "test",
+      "level": 0.8
+    }
+  ],
+  "replicates": 4,
+  "replicateType": "technical",
+  "randomizationSeed": 42,
+  "analysisPlan": "Exclude QC-failed wells, require three passing replicates per condition and separated controls. Rank descriptive means; confirm independently. No causal or significance claims.",
+  "references": []
+}

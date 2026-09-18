@@ -1,0 +1,55 @@
+{
+  "name": "bio-harness",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pi-powered, approval-gated biological experiment campaigns",
+  "license": "Apache-2.0",
+  "author": "Geet Khosla (https://github.com/gvkhosla)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gvkhosla/bio-harness.git"
+  },
+  "homepage": "https://github.com/gvkhosla/bio-harness#readme",
+  "bugs": {
+    "url": "https://github.com/gvkhosla/bio-harness/issues"
+  },
+  "keywords": [
+    "biology",
+    "lab-automation",
+    "pi",
+    "agent-harness",
+    "experiment-design",
+    "scientific-workflows"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "bin": {
+    "bio": "dist/cli.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "bio": "tsx src/cli.ts",
+    "demo": "tsx src/cli.ts demo",
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
+    "check": "npm run fmt:check && npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.85.1",
+    "typebox": "1.3.7",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "prettier": "3.6.2",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  }
+}

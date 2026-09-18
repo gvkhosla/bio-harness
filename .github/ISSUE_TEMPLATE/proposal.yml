@@ -1,0 +1,40 @@
+name: Workflow or feature proposal
+description: Propose a scientific workflow, integration, evaluation, or usability improvement.
+title: "proposal: "
+body:
+  - type: textarea
+    id: user
+    attributes:
+      label: Who needs this, and what problem does it solve?
+      description: A real repeated task is more helpful than a broad feature name.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Proposed scope
+      description: What should change? What should remain outside the harness? Link public documentation where useful.
+    validations:
+      required: true
+  - type: textarea
+    id: assumptions
+    attributes:
+      label: Scientific assumptions and failure cases
+      description: Include controls, provenance, permissions, or provider constraints where relevant. Do not include hazardous protocols or confidential data.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: How can we know it works?
+      description: Suggest acceptance criteria and an offline or synthetic test. Do not assume access to live instruments.
+    validations:
+      required: true
+  - type: dropdown
+    id: involvement
+    attributes:
+      label: How would you like to help?
+      options:
+        - Scientific or workflow review
+        - Implementation or tests
+        - Documentation or user testing
+        - Providing a shareable synthetic example
+        - Reporting a need only

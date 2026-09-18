@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and early ideas
+    url: https://github.com/gvkhosla/bio-harness/discussions
+    about: Discuss use cases and ask for help before proposing a large change.
+  - name: Report a security vulnerability privately
+    url: https://github.com/gvkhosla/bio-harness/security/advisories/new
+    about: Do not post exploit details or confidential information in a public issue.

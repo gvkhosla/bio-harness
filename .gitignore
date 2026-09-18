@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.bio/
+.env
+.env.*
+*.sqlite*
+*.db
+*.db-wal
+*.db-shm
+*.log
+.DS_Store
+coverage/
