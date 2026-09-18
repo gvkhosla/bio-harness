@@ -10,7 +10,20 @@ test("actual Pi tools expose domain operations but not operator authority or arb
     const harness = new Harness(store);
     const tools = biologyTools(harness);
     const names = tools.map((t) => t.name);
-    assert.equal(names.length, 9);
+    assert.deepEqual(names, [
+      "bio_capabilities",
+      "bio_cfps_plate",
+      "bio_cfps_condition",
+      "bio_cfps_well",
+      "bio_campaigns",
+      "bio_create",
+      "bio_inspect",
+      "bio_propose",
+      "bio_validate",
+      "bio_execute_approved",
+      "bio_analyze",
+      "bio_next",
+    ]);
     assert.ok(names.includes("bio_propose"));
     assert.ok(names.includes("bio_execute_approved"));
     for (const forbidden of [
@@ -31,6 +44,7 @@ test("actual Pi tools expose domain operations but not operator authority or arb
       {} as ExtensionContext,
     );
     assert.match(JSON.stringify(result), /ginkgo-handoff/);
+    assert.match(JSON.stringify(result), /bio_cfps_plate/);
     const campaign = harness.create({
       title: "Agent test",
       objective: "Approval is separate",

@@ -33,7 +33,7 @@ This is a **replay of Ginkgo's published example return**, not a new experimenta
 - Our descriptive shortlist and local QC policy, **not Ginkgo-qualified scientific acceptance**.
 - No source metadata code is executed or interpreted as agent instructions.
 
-The core walkthrough is deterministic software, not a live model conversation. Pi agent mode remains a separate, optional demonstration of the original synthetic campaign tools. The Pi agent does not currently have tools for this CFPS replay.
+The core walkthrough is deterministic software, not a live model conversation. Pi agent mode remains a separate, optional segment: it now has read-only plate, condition, and well tools for this same pinned CFPS example, alongside the original synthetic campaign tools. It does not yet have CFPS decision-brief or execution tools.
 
 ## Walkthrough
 
@@ -92,6 +92,18 @@ Do not call the local `--by` string authenticated authorization or the hash chai
 > “Could we pair with one applications scientist and one integration engineer to choose a supported workflow and test this with one external research team? We would measure time to an accepted request, clarification cycles, and whether the researcher commissions another campaign.”
 
 Ask which boundary should be partner-owned rather than Catalyst-owned. Live feasibility, qualified workflow mapping, pricing, execution contracts, authorization, and reconciliation remain to be agreed and built. No private API access is assumed.
+
+## Optional live-agent evidence inspection
+
+After rehearsing the offline walkthrough, use an authenticated Pi model in a separate terminal:
+
+```bash
+npm run bio -- agent "Inspect the original CFPS plate with bio_cfps_plate, sample 9 with bio_cfps_condition, and J21 with bio_cfps_well. Report the eligible replicate count, computed mean and SD, and the source flag. Cite the source URL and JSON pointers. Do not create or modify campaigns."
+```
+
+The tool responses are the evidence; verify the model's summary against the actual tool trace and values. Model calls may incur costs; prompts and tool-returned evidence go to the selected model. The source's embedded metadata/code is not exposed to the agent.
+
+The browser's scenario selector is not synchronized with the agent. Evidence tool calls explicitly name `original` or `control-failure`; no tool changes the source or the browser. A dedicated agent refusal/decision-brief demo is not part of this slice. Retain the offline walkthrough as the fallback.
 
 ## Rehearsal checklist
 

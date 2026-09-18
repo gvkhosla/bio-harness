@@ -39,7 +39,7 @@ The replay preserves **35 source-flagged wells** and retains 71 conditions with 
 
 See the [seven-minute demo script, rehearsal checklist, remote access, and backup recording instructions](docs/DEMO.md). The [fixture notes](fixtures/ginkgo-cfps/README.md) document the mapping and scientific limitations. The original source bytes and MIT notice are preserved separately from our code.
 
-The visual replay does not read private `.bio/` workspaces, call a model, or add CFPS tools to the Pi agent. Agent-driven synthetic campaigns remain available below. This deliberately keeps the core meeting demo deterministic and honest.
+The visual replay does not read private `.bio/` workspaces or call a model. Separately, the Pi agent now has three read-only tools for the same pinned CFPS evidence. The browser remains a deterministic offline demo; agent mode requires model authentication and may incur costs.
 
 ## Why this exists
 
@@ -51,7 +51,7 @@ Bio Harness explores the layer between scientific reasoning and laboratory execu
 
 | Capability                                                  | V1 status                                                                              |
 | ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Pi agent with nine domain-specific tools                    | Working; no shell, generic file, approval, or result-import tool                       |
+| Pi agent with twelve domain-specific tools                  | Working; no shell, generic file, approval, or result-import tool                       |
 | Durable campaigns and versioned plan drafts                 | SQLite with transactional mutations and hash-linked audit events                       |
 | Validation and approvals                                    | Explicit controls, sample identities, capacity, simulation budget, exact-plan approval |
 | Offline execution                                           | Seeded toy simulator, randomized 96-well layout, two-batch demo                        |
@@ -116,6 +116,26 @@ Then ask the agent to inspect the campaign and execute the approved draft. A fol
 Agent transcripts are stored in `.bio/sessions/`. A new invocation starts a new conversation, but campaigns and evidence persist and are discoverable through tools. This is not automatic conversation resumption.
 
 **Privacy:** prompts and campaign information returned by tools are sent to your selected model. Do not use confidential or regulated sample data without appropriate agreements. Agent mode loads no global/project extensions, skills, prompt templates, context files, shell, or generic file tools. It does reuse Pi's credential/model resolution.
+
+### Inspect CFPS evidence with the agent
+
+```bash
+npm run bio -- agent "Inspect the original published CFPS plate, sample 9 and well J21. Report the eligible replicate count, mean, SD and source flag, citing the pinned source and exact JSON pointers. Do not create a campaign or propose an experiment."
+```
+
+New read-only tools:
+
+| Tool                 | Returns                                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `bio_cfps_plate`     | Provenance, plate geometry, calibration, QC policy, experimental sample IDs, and a bounded shortlist (default 10, maximum 20) |
+| `bio_cfps_condition` | An exact experimental sample ID, all four replicates including exclusions, mean/SD, and source pointers                       |
+| `bio_cfps_well`      | One exact coordinate (`A01`–`P24`), measured values, source flags, separately labeled injected flags, and source pointers     |
+
+Each call requires `scenario: "original"` or `"control-failure"`; the agent should use the original unless you request the demonstration failure. Scenario selection is per call, **not synchronized with the browser**. A blocked scenario has no shortlist or descriptive rank, but observations remain inspectable.
+
+The tools read only the fixed vendored source, verify its bytes against the pinned manifest, and reuse the workbench's analysis. They do not expose embedded metadata/code, accept arbitrary files/URLs, mutate campaign state, approve anything, generate CFPS briefs, or execute experiments. Source-reported concentrations/calibration are distinguished from locally computed statistics. Inspection-only CFPS tools do not make the entire agent read-only: the existing phenotype campaign tools remain available.
+
+**This slice stops at evidence access.** Agent-generated decision briefs and a dedicated refusal demonstration are follow-on work. The local fixture check is not provider authentication; neither descriptive rank nor well replication establishes statistical significance or biological independence.
 
 ## Deterministic workflow without an LLM
 
@@ -216,7 +236,8 @@ src/store.ts      SQLite snapshots + append-only hash-linked audit events
 src/harness.ts    Campaign lifecycle, approval, budget, imports, follow-ups
 src/adapters.ts   Synthetic executor and local Ginkgo handoff builder
 src/analysis.ts   QC and descriptive statistics
-src/agent.ts      Pi SDK session and nine narrowly scoped tools
+src/agent.ts      Pi SDK session and twelve narrowly scoped tools
+src/cfps-evidence.ts Bounded read-only CFPS projections with source pointers
 src/report.ts     Evidence report
 src/cli.ts        Operator commands, interactive agent, offline demo
 src/replay.ts     Pinned public CFPS result projection and review briefs

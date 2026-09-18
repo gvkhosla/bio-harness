@@ -10,7 +10,9 @@ This is a direction for contributors, not a promise of dates or capabilities. Di
 - [x] Enforced QC-failure demonstration and isolated approval-boundary proof.
 - [x] Browser, accessibility, and HTTP-boundary tests; walkthrough and backup recording command.
 
-The replay is separate from the original phenotype workflow and from live Pi tools. It is not a provider-qualified protocol or live execution integration.
+- [x] Read-only Pi tools for plate, condition, and well inspection, with bounded outputs and exact source pointers.
+
+The replay remains separate from the original phenotype workflow. Pi can inspect its evidence but cannot generate CFPS briefs, approve it, or execute it through these tools. Agent decision briefs and a dedicated refusal demonstration are next slices. It is not a provider-qualified protocol or live execution integration.
 
 ## Foundation: v0.1
 
