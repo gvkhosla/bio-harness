@@ -93,6 +93,9 @@ export async function startDemoServer(
   const staticFiles: Record<string, { file: string; mime: string }> = {
     "/": { file: "index.html", mime: "text/html; charset=utf-8" },
     "/app.js": { file: "app.js", mime: "text/javascript; charset=utf-8" },
+    "/trace": { file: "trace.html", mime: "text/html; charset=utf-8" },
+    "/trace.js": { file: "trace.js", mime: "text/javascript; charset=utf-8" },
+    "/trace.css": { file: "trace.css", mime: "text/css; charset=utf-8" },
     "/icon.svg": { file: "icon.svg", mime: "image/svg+xml" },
     "/styles.css": { file: "styles.css", mime: "text/css; charset=utf-8" },
   };

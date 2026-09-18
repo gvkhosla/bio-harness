@@ -1,4 +1,5 @@
 import { Type } from "typebox";
+import { DecisionTrace, traceError } from "./decision-trace.js";
 import { defineTool } from "@earendil-works/pi-coding-agent";
 import { createScopedSession, promptWithLimits } from "./agent.js";
 import {
@@ -141,31 +142,97 @@ export async function generateDecisionBrief(
   input: unknown,
   stateDir: string,
   modelName?: string,
+  trace?: DecisionTrace,
 ) {
   // QC/request preflight happens before model initialization or paid calls.
-  const run = createDecisionRun(input);
-  const session = await createScopedSession(
-    run.tools,
-    briefPrompt,
-    stateDir,
-    modelName,
-  );
+  const checked = trace?.start("policy-check", input);
+  let run: ReturnType<typeof createDecisionRun>;
+  try {
+    run = createDecisionRun(input);
+    checked?.({
+      outcome: "reviewable",
+      note: "Local QC; not scientific or provider acceptance",
+    });
+  } catch (error) {
+    checked?.({ error: traceError(error) }, true);
+    throw error;
+  }
+  const initialized = trace?.start("model-initialization", {
+    requested: modelName ?? process.env.BIO_MODEL ?? "auto",
+  });
+  let session: Awaited<ReturnType<typeof createScopedSession>>;
+  try {
+    session = await createScopedSession(
+      run.tools,
+      briefPrompt,
+      stateDir,
+      modelName,
+    );
+    const identity = {
+      provider: session.model?.provider,
+      model: session.model?.id,
+      sessionId: session.sessionId,
+      thinkingLevel: session.thinkingLevel,
+    };
+    trace?.model(identity);
+    initialized?.(identity);
+  } catch (error) {
+    initialized?.({ error: traceError(error) }, true);
+    throw error;
+  }
+  const spans = new Map<string, ReturnType<DecisionTrace["start"]>>();
+  let recordingError: unknown;
+  const unsubscribe = session.subscribe((event) => {
+    try {
+      if (trace && event.type === "tool_execution_start")
+        spans.set(
+          event.toolCallId,
+          trace.start(`tool:${event.toolName}`, {
+            callId: event.toolCallId,
+            arguments: event.args,
+          }),
+        );
+      if (event.type === "tool_execution_end") {
+        const end = spans.get(event.toolCallId);
+        end?.(event.result, event.isError);
+        spans.delete(event.toolCallId);
+      }
+    } catch (error) {
+      recordingError = error;
+      void session.abort();
+    }
+  });
+  const interpreted = trace?.start("model-interpretation", {
+    systemPrompt: briefPrompt,
+    note: "Only submitted interpretation and tool I/O are recorded, not private model thinking.",
+  });
   try {
     await promptWithLimits(
       session,
       "Read the bound decision context and submit a concise, cited scientific review interpretation. Do not perform any other work.",
       () => {},
     );
+    if (recordingError) throw recordingError;
     if (!session.model)
       throw new Error(
         "Model identity unavailable; refusing unattributed export",
       );
-    return decisionArtifact(run.result(), {
+    const artifact = decisionArtifact(run.result(), {
       provider: session.model.provider,
       model: session.model.id,
       sessionId: session.sessionId,
     });
+    interpreted?.({
+      artifactHash: artifact.artifactHash,
+      interpretation: artifact.brief.interpretation,
+      validation: artifact.brief.validation,
+    });
+    return artifact;
+  } catch (error) {
+    interpreted?.({ error: traceError(error) }, true);
+    throw error;
   } finally {
+    unsubscribe();
     session.dispose();
   }
 }

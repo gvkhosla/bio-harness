@@ -1,6 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -373,7 +379,20 @@ test("blocked QC and bad CLI inputs fail before model initialization, writes, or
       assert.ok(!result.stderr.includes("Model is not in"));
       if (args.includes("control-failure"))
         assert.match(result.stderr, /QC blocked/);
-      assert.equal(existsSync(state), false);
+      assert.equal(existsSync(join(state, "campaigns.sqlite")), false);
+      assert.equal(existsSync(join(state, "exports")), false);
+      const traces = readdirSync(join(state, "traces")).filter((f) =>
+        f.endsWith(".trace.json"),
+      );
+      const records = traces.map((f) =>
+        JSON.parse(readFileSync(join(state, "traces", f), "utf8")),
+      );
+      assert.ok(
+        records.every(
+          (r) =>
+            r.status === "failed" && r.model === null && r.artifact === null,
+        ),
+      );
     }
     assert.deepEqual(readFileSync(fixture), bytes);
   } finally {

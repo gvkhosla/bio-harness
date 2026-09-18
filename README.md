@@ -155,6 +155,12 @@ This starts a **separate restricted Pi session**, not the general campaign agent
 
 Use `--model provider/id`, `--dir PATH`, or `--json` as needed. Authentication, privacy, potential model costs, and the 12-turn / 120-second bound are the same as agent mode. A browser toggle does not change this command's explicit scenario. Transcripts and generated artifacts stay local and gitignored. A dedicated visible agent-refusal walkthrough remains a later slice; the deterministic offline demo is still the meeting fallback.
 
+### Inspect the run timeline
+
+`cfps-brief` now checkpoints `.bio/traces/RUN_ID.trace.json` before QC, during Pi tool calls, and after export. Failed QC, unavailable models, rejected submissions and interrupted work remain visible; they do not become successful briefs. A record left `running` means incomplete/unknown, not that a process is still active. The trace records model/session identity, submitted interpretation, tool inputs/outputs, local durations and errors—not model thinking. Costs are explicitly uncollected. Large payloads are labeled as truncated.
+
+Start `npm run demo:web`, open **http://127.0.0.1:4310/trace**, and choose the printed trace file. The viewer checks its content hash and renders it as text, entirely in the browser; no file upload, private workspace endpoint, model call or execution is added. Records are unsigned and may contain private questions or tool arguments; inspect before sharing. Refresh clears the viewer.
+
 ## Deterministic workflow without an LLM
 
 ```bash

@@ -102,35 +102,57 @@ async function main() {
     console.error(
       "CFPS brief: model calls may incur costs; your question and public evidence go to the selected model. No campaign or execution tools.",
     );
-    const artifact = await generateDecisionBrief(
-      { question, scenario: values.scenario, strategy: values.strategy },
-      stateDir,
-      values.model,
-    );
-    const name = `cfps-decision-${artifact.artifactHash}`;
-    const jsonPath = saveArtifact(
-      stateDir,
-      `${name}.json`,
-      JSON.stringify(artifact, null, 2) + "\n",
-    );
-    const markdownPath = saveArtifact(
-      stateDir,
-      `${name}.md`,
-      decisionMarkdown(artifact),
-    );
-    const result = {
-      status: artifact.brief.status,
-      artifactHash: artifact.artifactHash,
-      json: jsonPath,
-      markdown: markdownPath,
-      generation: artifact.generation,
-      validation: artifact.brief.validation,
+    const { DecisionTrace, traceError } = await import("./decision-trace.js");
+    const request = {
+      question,
+      scenario: values.scenario,
+      strategy: values.strategy,
     };
-    if (values.json) console.log(JSON.stringify(result, null, 2));
-    else
-      console.log(
-        `\nCFPS decision brief · UNAPPROVED\n${markdownPath}\n${jsonPath}\n\nEvidence references resolved. Model interpretation requires human review. No order sent.\n`,
+    const trace = new DecisionTrace(stateDir, request);
+    console.error(`Run trace: ${trace.path}`);
+    try {
+      const artifact = await generateDecisionBrief(
+        request,
+        stateDir,
+        values.model,
+        trace,
       );
+      const exported = trace.start("artifact-export", {
+        artifactHash: artifact.artifactHash,
+      });
+      const name = `cfps-decision-${artifact.artifactHash}`;
+      const jsonPath = saveArtifact(
+        stateDir,
+        `${name}.json`,
+        JSON.stringify(artifact, null, 2) + "\n",
+      );
+      const markdownPath = saveArtifact(
+        stateDir,
+        `${name}.md`,
+        decisionMarkdown(artifact),
+      );
+      const result = {
+        trace: trace.path,
+        status: artifact.brief.status,
+        artifactHash: artifact.artifactHash,
+        json: jsonPath,
+        markdown: markdownPath,
+        generation: artifact.generation,
+        validation: artifact.brief.validation,
+      };
+      exported({ json: jsonPath, markdown: markdownPath });
+      trace.finish("completed", artifact);
+      if (values.json) console.log(JSON.stringify(result, null, 2));
+      else
+        console.log(
+          `\nCFPS decision brief · UNAPPROVED\n${markdownPath}\n${jsonPath}\n\nEvidence references resolved. Model interpretation requires human review. No order sent.\n`,
+        );
+    } catch (error) {
+      const failed = trace.start("run-failure");
+      failed({ error: traceError(error) }, true);
+      trace.finish("failed");
+      throw error;
+    }
     return;
   }
   const store = new Store(join(stateDir, "campaigns.sqlite"));

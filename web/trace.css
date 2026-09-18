@@ -1,0 +1,111 @@
+.trace-main {
+  max-width: 1100px;
+  padding-bottom: 40px;
+}
+.trace-main section {
+  margin-bottom: 32px;
+}
+.trace-main h2 {
+  margin-bottom: 14px;
+}
+.trace-main h3 {
+  margin-top: 18px;
+}
+.trace-main label {
+  display: block;
+  margin: 20px 0 8px;
+  font-weight: 600;
+}
+.trace-main input,
+.trace-main textarea {
+  font: inherit;
+  max-width: 100%;
+  padding: 10px;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--ink);
+  caret-color: var(--accent);
+}
+.trace-main input[type="file"] {
+  width: 100%;
+}
+.trace-main input::file-selector-button {
+  font: inherit;
+  padding: 10px;
+  margin-right: 12px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.trace-main code {
+  display: inline;
+}
+.trace-loader {
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+#trace-status {
+  margin-top: 14px;
+  overflow-wrap: anywhere;
+}
+.run-facts {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 10px 20px;
+}
+.run-facts dt,
+.run-facts dd {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.trace-main .warning {
+  color: var(--warning);
+  background: var(--warning-soft);
+  padding: 16px;
+  margin-top: 20px;
+}
+.timeline {
+  padding-left: 26px;
+}
+.timeline > li {
+  padding: 6px 0 24px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.timeline > li::marker {
+  color: var(--muted);
+}
+.timeline .rejected h3 {
+  color: var(--danger);
+}
+.timeline p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.trace-main pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 16px;
+  max-height: 480px;
+  overflow: auto;
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .trace-loader {
+    padding: 18px;
+  }
+  .run-facts {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+  .run-facts dd {
+    margin-bottom: 12px;
+  }
+}

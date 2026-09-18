@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bio Harness · Decision trace</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/trace.css" />
+    <script type="module" src="/trace.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#trace-main">Skip to decision trace</a>
+    <header class="masthead">
+      <a class="brand" href="/">Bio Harness<span>Decision trace</span></a
+      ><span class="environment">Local review · no execution</span
+      ><a href="/">Evidence workbench</a>
+    </header>
+    <main id="trace-main" class="trace-main">
+      <section class="intro">
+        <div>
+          <h1>Inspect the path to a decision.</h1>
+          <p>
+            Question, checks, tool calls and rejected actions—not just the final
+            answer.
+          </p>
+        </div>
+      </section>
+      <section class="trace-loader" aria-labelledby="load-title">
+        <h2 id="load-title">Open a local run record</h2>
+        <p>
+          Run <code>npm run bio -- cfps-brief "Your decision question"</code>,
+          then select the printed <code>.trace.json</code> file. Failed runs
+          have records too.
+        </p>
+        <label for="trace-file">Decision trace JSON (up to 5 MB)</label>
+        <input
+          id="trace-file"
+          type="file"
+          accept=".json,application/json"
+          aria-describedby="file-help trace-status"
+        />
+        <p id="file-help" class="subtle">
+          Read only in this browser tab. Nothing is uploaded, executed, or saved
+          automatically. The server cannot browse your workspace. Refresh to
+          clear.
+        </p>
+        <p id="trace-status" role="status">No run selected.</p>
+      </section>
+      <div id="trace-content" hidden>
+        <section aria-labelledby="run-title">
+          <h2 id="run-title">Recorded run</h2>
+          <dl id="run-facts" class="run-facts"></dl>
+          <p class="warning">
+            Hash consistency is not authenticity. This is an unsigned local
+            record, not a signed audit or provider verification. A running
+            record may be incomplete; it is not evidence that a process is still
+            active.
+          </p>
+        </section>
+        <section aria-labelledby="timeline-title">
+          <h2 id="timeline-title">Run timeline</h2>
+          <p>
+            Expand a step to inspect recorded inputs, outputs, or errors. Times
+            are local elapsed measurements; no model thinking is shown.
+          </p>
+          <ol id="timeline" class="timeline"></ol>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <span>Bio Harness / local scientific review</span
+      ><span>No approval or order implied.</span>
+    </footer>
+  </body>
+</html>
