@@ -10,3 +10,9 @@ dist/
 *.log
 .DS_Store
 coverage/
+playwright-report/
+test-results/
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/cache/
+.impeccable/config.local.json

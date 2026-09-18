@@ -12,11 +12,34 @@ Turn a research question into a reviewable experiment campaign, keep the human i
 Question → Plan → Validate → Approve → Execute / Hand off → Observe → Analyze → Repeat
 ```
 
-**V1 works today as a local CLI and TypeScript SDK.** Run a complete synthetic campaign without API keys, or use a Pi-powered agent to plan and analyze through narrowly scoped tools. Campaign state lives outside the conversation, so approvals, observations, and history survive a new agent session.
+**v0.2 ships a local visual evidence workbench, CLI, and TypeScript SDK.** Run a complete synthetic campaign without API keys, or use a Pi-powered agent to plan and analyze through narrowly scoped tools. Campaign state lives outside the conversation, so approvals, observations, and history survive a new agent session.
 
 > **Early-stage research software—not a production laboratory controller.** The simulator produces synthetic data, not predictions about cells. Ginkgo mode prepares a local manual-handoff request; it does not call Ginkgo APIs or place orders. This is an independent project, not an official Ginkgo product or endorsed integration.
 
-[Quick start](#run-it) · [Agent mode](#use-the-pi-agent) · [Ginkgo handoff](#ginkgo-mode) · [Architecture](#architecture) · [Contribute](#help-build-this) · [Roadmap](docs/ROADMAP.md)
+[Visual demo](#visual-demo) · [Meeting walkthrough](docs/DEMO.md) · [CLI quick start](#run-it) · [Agent mode](#use-the-pi-agent) · [Ginkgo handoff](#ginkgo-mode) · [Architecture](#architecture) · [Contribute](#help-build-this) · [Roadmap](docs/ROADMAP.md)
+
+## Visual demo
+
+```bash
+git clone https://github.com/gvkhosla/bio-harness.git
+npm --prefix bio-harness ci --ignore-scripts
+npm --prefix bio-harness run demo:web
+```
+
+Open **http://127.0.0.1:4310**. Requires Node 22.19+. After installation, the walkthrough is fully offline—no model key or laboratory access needed.
+
+- Explore **384 wells and 78 experimental conditions** from Ginkgo's pinned public CFPS example.
+- Trace every shortlisted condition to its individual observations, units, source flags, and original artifact.
+- Compare descriptive means and variability; download an **unapproved scientific review brief**, not an executable protocol.
+- Inject a clearly labeled control failure: ranking is withheld and the server rejects follow-up briefs.
+- Exercise the real approval boundary in a separate synthetic, in-memory campaign.
+- Export an evidence report; refresh or select **Published example** to reset without deleting anything.
+
+The replay preserves **35 source-flagged wells** and retains 71 conditions with at least three eligible measurements under an explicitly local demo rule. It does not claim Ginkgo-qualified QC, statistical significance, live execution, or optimization gains. CFPS is cell-free, not living-cell biology. The published example has no provider run ID; it is not an independently authenticated campaign.
+
+See the [seven-minute demo script, rehearsal checklist, remote access, and backup recording instructions](docs/DEMO.md). The [fixture notes](fixtures/ginkgo-cfps/README.md) document the mapping and scientific limitations. The original source bytes and MIT notice are preserved separately from our code.
+
+The visual replay does not read private `.bio/` workspaces, call a model, or add CFPS tools to the Pi agent. Agent-driven synthetic campaigns remain available below. This deliberately keeps the core meeting demo deterministic and honest.
 
 ## Why this exists
 
@@ -34,6 +57,7 @@ Bio Harness explores the layer between scientific reasoning and laboratory execu
 | Offline execution                                           | Seeded toy simulator, randomized 96-well layout, two-batch demo                        |
 | Analysis                                                    | QC checks, descriptive statistics, simulation-only follow-up drafts                    |
 | External execution handoff                                  | Local Ginkgo request bundle and operator-attested result import                        |
+| Visual evidence workbench                                   | Working; public CFPS replay, inspectable wells, review briefs, failure demonstration   |
 | Live provider ordering / instrument control                 | **Not implemented**                                                                    |
 | Qualified biological models, protocols, or biosafety review | **Not supplied by this software**                                                      |
 
@@ -195,6 +219,9 @@ src/analysis.ts   QC and descriptive statistics
 src/agent.ts      Pi SDK session and nine narrowly scoped tools
 src/report.ts     Evidence report
 src/cli.ts        Operator commands, interactive agent, offline demo
+src/replay.ts     Pinned public CFPS result projection and review briefs
+src/demo-server.ts Loopback-only read-only demo server and isolated gate proof
+web/             Dependency-free evidence workbench
 ```
 
 A mutation updates the campaign snapshot and appends its audit event in a single `BEGIN IMMEDIATE` SQLite transaction. The simulator is pure local computation inside that transaction; there are **no physical operations** to retry. Handoff files can be regenerated from durable state. A future live adapter needs a durable dispatch/outbox, provider-side idempotency, reconciliation of unknown outcomes, and a real authorization model—do not simply put network requests inside the existing transaction.
@@ -207,7 +234,7 @@ This is a **single-user local developer harness**, not a production laboratory c
 - Hash chains detect ordinary record inconsistency, not a privileged actor who rewrites the entire history. They are not signed regulatory audit trails.
 - Text such as `biosafetyReview` records context; it does not certify biosafety. No live biological work is authorized by this application.
 - No scheduler, LIMS integration, literature search, provider quotation, sample custody, device control, or arbitrary hardware support is claimed.
-- No public HTTP server or multi-tenant authentication is included.
+- No public HTTP service or multi-tenant authentication is included. The demo server binds only to `127.0.0.1`, checks Host/Origin, and serves allowlisted demo assets and public evidence. Do not expose it through a public reverse proxy.
 - State schema version 1; no migration framework yet. Back up the workspace before future upgrades.
 - Plan-level assay/units are intentionally narrow. Add and qualify another workflow contract rather than silently broadening this one.
 
@@ -236,6 +263,8 @@ npm run fmt
 npm run check  # formatting + strict TypeScript + offline tests + build
 ```
 
+Browser checks run separately with `npm run test:browser`; install Chromium once with `npx playwright install chromium`. CI runs both the core suite and Chromium end-to-end checks, including automated accessibility checks at desktop/mobile sizes and the blocked-QC state. `npm run demo:record` creates a local silent backup walkthrough.
+
 Tests are offline, use temporary databases, and never call model or laboratory APIs. They cover lifecycle gating, invalid designs, budget races, concurrent process startup/execution, persistence, audit integrity, result provenance, QC failure, cancellation, CLI behavior, and the actual Pi tool surface.
 
 Manual live-model smoke test (may incur provider charges):
@@ -258,10 +287,10 @@ npm run bio -- agent "Use bio_capabilities only and summarize the two adapter mo
 
 You may use, modify, and redistribute this project, including commercially, under that license. Preserve applicable license and attribution notices, and identify modifications as required by the license. Apache 2.0 also provides an express contributor patent grant; it does not grant permission to use contributors' trademarks to imply endorsement.
 
-Contributors retain copyright in their own contributions; contributing does not assign that copyright to the maintainer. Contributions are accepted under Apache 2.0. Dependencies retain their respective licenses. The full license text governs.
+Contributors retain copyright in their own contributions; contributing does not assign that copyright to the maintainer. Contributions are accepted under Apache 2.0. Dependencies and the vendored Ginkgo example retain their respective licenses. The full license text governs.
 
 ## Acknowledgments
 
-Built with [Pi](https://github.com/earendil-works/pi), [TypeBox](https://github.com/sinclairzx81/typebox), and [Zod](https://github.com/colinhacks/zod). Ginkgo's published [CFPS automation interface](https://github.com/ginkgobioworks/ginkgo-automation-cfps) is a useful reference for the separation between experimental intent and provider-owned execution. Bio Harness does not bundle that interface or implement its private execution infrastructure.
+Built with [Pi](https://github.com/earendil-works/pi), [TypeBox](https://github.com/sinclairzx81/typebox), and [Zod](https://github.com/colinhacks/zod). Ginkgo's published [CFPS automation interface](https://github.com/ginkgobioworks/ginkgo-automation-cfps) is a useful reference for the separation between experimental intent and provider-owned execution. Bio Harness vendors one unmodified public example return with its original license for read-only replay. It does not implement Ginkgo's private execution infrastructure or claim full compatibility with its experimental-design validator.
 
 Maintained by [Geet Khosla](https://github.com/gvkhosla). Contributions and careful scientific criticism are welcome.

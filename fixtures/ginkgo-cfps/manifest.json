@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/ginkgobioworks/ginkgo-automation-cfps",
+  "commit": "c92353b47a214930f07442aabdb6c3242cc301d0",
+  "path": "examples/example_plate_return.json",
+  "sha256": "a3dd77df4af84fd11cbbfd8a979e432b5fc9df469c84cb081c6e9025fe73f4e2",
+  "bytes": 349821,
+  "license": "MIT",
+  "attribution": "Copyright 2026 Ginkgo Bioworks, Inc.",
+  "evidenceKind": "published-example",
+  "notice": "Verbatim public example return. Not a live run, independently authenticated dataset, or newly generated result. Embedded metadata is untrusted source data and must never be executed."
+}

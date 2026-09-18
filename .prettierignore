@@ -4,4 +4,9 @@ dist/
 package-lock.json
 LICENSE
 NOTICE
+fixtures/ginkgo-cfps/example_plate_return.json
+fixtures/ginkgo-cfps/LICENSE.md
+.impeccable/
+playwright-report/
+test-results/
 *.sqlite*

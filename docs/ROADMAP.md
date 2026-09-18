@@ -2,7 +2,17 @@
 
 This is a direction for contributors, not a promise of dates or capabilities. Discuss substantial work before implementing it.
 
-## Current: v0.1
+## Current: v0.2
+
+- [x] Offline visual workbench for a pinned public Ginkgo CFPS example.
+- [x] Source-preserving observation projection, missing-value handling, and traceable descriptive shortlist.
+- [x] Non-executable confirmation/exploration review briefs and Markdown evidence reports.
+- [x] Enforced QC-failure demonstration and isolated approval-boundary proof.
+- [x] Browser, accessibility, and HTTP-boundary tests; walkthrough and backup recording command.
+
+The replay is separate from the original phenotype workflow and from live Pi tools. It is not a provider-qualified protocol or live execution integration.
+
+## Foundation: v0.1
 
 - [x] Local CLI and TypeScript SDK.
 - [x] Pi sessions with a narrow scientific tool surface.
@@ -18,7 +28,7 @@ No qualified cell model, live provider order, real pricing, or instrument contro
 
 ### Better result ingestion
 
-Support explicitly missing measurements without asking users to invent numeric placeholders. Preserve the difference between failed QC, unmeasured wells, invalid experiments, and valid negative results.
+Extend explicitly missing measurements to the original phenotype workflow without asking users to invent numeric placeholders. The separate CFPS replay now supports null measurements, but the existing persisted phenotype contract still needs a compatibility/migration design. Preserve the difference between failed QC, unmeasured wells, invalid experiments, and valid negative results.
 
 **Done when:** typed representations, analysis behavior, reports, fixtures, and migration handling are consistent and tested.
 

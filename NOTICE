@@ -7,3 +7,8 @@ https://github.com/gvkhosla/bio-harness
 Licensed under the Apache License, Version 2.0.
 Contributors retain copyright in their respective contributions.
 Third-party dependencies are distributed under their respective licenses.
+
+The public example in fixtures/ginkgo-cfps is third-party material:
+Copyright 2026 Ginkgo Bioworks, Inc.
+Its original permission notice is preserved in fixtures/ginkgo-cfps/LICENSE.md.
+Source and integrity metadata are documented alongside the unmodified fixture.

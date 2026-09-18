@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Bio Harness · Evidence workbench</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Skip to evidence</a>
+    <header class="masthead">
+      <a class="brand" href="/">Bio Harness<span>Evidence workbench</span></a>
+      <span class="environment">Local replay · no live lab connection</span>
+      <a
+        href="https://github.com/gvkhosla/bio-harness"
+        target="_blank"
+        rel="noreferrer"
+        >Project source</a
+      >
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <h1>From observations to the next decision.</h1>
+          <p>
+            Inspect a published Ginkgo CFPS example. See what the evidence
+            supports—and where the harness stops.
+          </p>
+        </div>
+        <a id="report-link" class="button secondary" href="/api/report"
+          >Export evidence report</a
+        >
+      </section>
+      <div class="scenario-bar">
+        <div
+          class="scenario-controls"
+          role="group"
+          aria-label="Replay scenario"
+        >
+          <button id="original" aria-pressed="true">Published example</button>
+          <button id="failure" aria-pressed="false">
+            Inject control failure
+          </button>
+        </div>
+        <p id="scenario-caption">
+          Original source preserved. No new experiment performed.
+        </p>
+      </div>
+      <p id="loading" role="status">
+        Verifying source and loading 384 observations…
+      </p>
+      <div id="error" role="alert" hidden>
+        <p id="error-message"></p>
+        <button id="retry">Retry loading</button>
+      </div>
+      <noscript
+        >This workbench needs JavaScript. The offline CLI remains available: npm
+        run demo.</noscript
+      >
+      <div id="workspace" class="workspace" hidden>
+        <aside class="context" aria-labelledby="context-title">
+          <h2 id="context-title">Research context</h2>
+          <p class="research-question">
+            Which conditions merit independent confirmation?
+          </p>
+          <p>
+            Cell-free protein synthesis. A single published plate—not a
+            living-cell model or a new discovery.
+          </p>
+          <dl class="context-facts">
+            <dt>Evidence</dt>
+            <dd>Ginkgo public example</dd>
+            <dt>Design</dt>
+            <dd>78 experimental conditions<br />4 wells per condition</dd>
+            <dt>Readout</dt>
+            <dd>Source-reported concentration, g/L</dd>
+            <dt>Source identity</dt>
+            <dd>Provider run ID not supplied</dd>
+          </dl>
+          <h3>Evidence trail</h3>
+          <ol class="trail">
+            <li>
+              <strong>Source pinned</strong
+              ><span>Original bytes + SHA-256</span>
+            </li>
+            <li>
+              <strong>Observations mapped</strong
+              ><span>Column-major, 16 × 24</span>
+            </li>
+            <li>
+              <strong>Local screen applied</strong
+              ><span id="trail-qc">Checking quality…</span>
+            </li>
+            <li>
+              <strong>Scientist review required</strong
+              ><span>No approval or order implied</span>
+            </li>
+          </ol>
+          <a id="source-link" target="_blank" rel="noreferrer"
+            >Open original source</a
+          >
+          <details class="source-details">
+            <summary>Inspect provenance</summary>
+            <p id="source-commit"></p>
+            <p>Artifact SHA-256</p>
+            <code id="source-hash"></code>
+            <p id="plate-id"></p>
+            <p>
+              Copyright 2026 Ginkgo Bioworks, Inc. Source fixture under MIT; Bio
+              Harness under Apache 2.0.
+            </p>
+          </details>
+        </aside>
+        <section class="evidence" aria-labelledby="plate-title">
+          <div class="section-heading">
+            <h2 id="plate-title">384 wells. One traceable record.</h2>
+            <span id="screen-state" class="state">Loading</span>
+          </div>
+          <p id="screen-summary" class="subtle"></p>
+          <div id="blocked" class="blocked" hidden>
+            <h3>Do not select a winner.</h3>
+            <p id="blocked-reason"></p>
+            <p>
+              Failure labels are injected locally for this demonstration. The
+              original observations and source flags are unchanged.
+            </p>
+          </div>
+          <div
+            class="plate-scroll"
+            role="region"
+            aria-label="384-well concentration map, horizontally scrollable"
+            tabindex="0"
+          >
+            <table id="plate">
+              <caption>
+                Source-reported concentration in g/L. Select a well to inspect
+                its evidence. Use arrow keys within the plate.
+              </caption>
+            </table>
+          </div>
+          <div class="legend">
+            <span class="scale"
+              ><i class="q0"></i><i class="q2"></i><i class="q4"></i
+              ><i class="q6"></i><i class="q8"></i><i class="q9"></i></span
+            ><span id="scale-label"></span><span><b>×</b> Source flag</span
+            ><span><b>!</b> Injected failure</span
+            ><span>Outline: selected condition</span>
+          </div>
+          <section class="ranking-section" aria-labelledby="ranking-title">
+            <div class="section-heading">
+              <h2 id="ranking-title">A shortlist, not a winner.</h2>
+              <span id="ranking-count" class="subtle"></span>
+            </div>
+            <p id="ranking-explanation"></p>
+            <div class="table-scroll">
+              <table id="ranking">
+                <caption>
+                  Descriptive means and sample standard deviations after the
+                  local screen. Select a condition to inspect every replicate.
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Condition</th>
+                    <th scope="col">Mean, g/L</th>
+                    <th scope="col">SD</th>
+                    <th scope="col">Eligible wells</th>
+                    <th scope="col">Excluded</th>
+                  </tr>
+                </thead>
+                <tbody id="ranking-body"></tbody>
+              </table>
+            </div>
+            <button id="all-candidates" class="quiet">
+              Show all candidates
+            </button>
+          </section>
+        </section>
+        <aside class="inspector" aria-labelledby="inspector-title">
+          <h2 id="inspector-title">Selected evidence</h2>
+          <div id="well-detail" aria-live="polite"></div>
+          <section class="decision" aria-labelledby="decision-title">
+            <h2 id="decision-title">What should happen next?</h2>
+            <p id="decision-summary"></p>
+            <label for="strategy">Review direction</label>
+            <select id="strategy">
+              <option value="confirm">Confirm top two candidates</option>
+              <option value="explore">Explore the top five candidates</option>
+            </select>
+            <p id="strategy-description"></p>
+            <button
+              id="download-brief"
+              class="primary"
+              aria-describedby="brief-boundary"
+            >
+              Download review brief
+            </button>
+            <p id="brief-boundary" class="subtle">
+              Unapproved discussion artifact. Not an executable protocol or
+              Ginkgo order. Feasibility and price remain unknown.
+            </p>
+            <p id="download-status" role="status"></p>
+          </section>
+        </aside>
+        <section class="review-notes" aria-labelledby="review-title">
+          <h2 id="review-title">
+            A clear boundary between evidence and action.
+          </h2>
+          <div class="notes-grid">
+            <div>
+              <h3>Screening policy</h3>
+              <p id="policy"></p>
+              <p id="calibration"></p>
+              <p id="control-summary"></p>
+              <details>
+                <summary>Scientific limits and unresolved questions</summary>
+                <ul id="limitations"></ul>
+              </details>
+            </div>
+            <div>
+              <h3>Approval belongs outside the agent</h3>
+              <p>
+                Run the actual campaign harness in an isolated synthetic
+                workspace. An unapproved request is rejected; an approved
+                simulation runs; a revised plan is rejected again.
+              </p>
+              <button id="prove-gates">Prove the approval boundary</button>
+              <div id="gate-result" role="status"></div>
+            </div>
+            <div>
+              <h3>The proposed Ginkgo connection</h3>
+              <p>
+                Customer evidence → reviewed scientific intent →
+                <strong>provider qualification and execution</strong> → results
+                → the next decision.
+              </p>
+              <p>
+                The bold step is a partnership opportunity, not a shipped
+                integration. Start with one supported workflow and one research
+                team.
+              </p>
+              <p class="subtle">
+                Independent project. Not endorsed by Ginkgo Bioworks. This core
+                walkthrough uses no model or laboratory API.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <span>Bio Harness / created by Geet Khosla</span
+      ><span>Evidence persists. Authority stays explicit.</span>
+    </footer>
+  </body>
+</html>

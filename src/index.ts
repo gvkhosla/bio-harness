@@ -12,3 +12,10 @@ export {
 } from "./contracts.js";
 export type { Plan, Results, Well, Condition } from "./contracts.js";
 export { analyze } from "./analysis.js";
+export {
+  loadReplay,
+  parseReplay,
+  decisionBrief,
+  replayMarkdown,
+} from "./replay.js";
+export type { Replay, ReplayWell, Scenario, Strategy } from "./replay.js";

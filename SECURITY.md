@@ -4,7 +4,7 @@
 
 Bio Harness is experimental, single-user research software. Security fixes currently target the latest `main` branch; no long-term support or response SLA is offered.
 
-V1 has no live instrument control, provider ordering, or public HTTP service. The simulator is synthetic, and the Ginkgo adapter only exports a local request. Do not deploy this as a safety-critical, clinical, multi-tenant, or regulated laboratory system.
+The harness has no live instrument control, provider ordering, or public HTTP service. v0.2 adds a loopback-only, read-only HTTP demo: it accepts only same-origin requests to allowlisted assets and fixed public-data scenarios. It does not expose private workspaces, uploads, arbitrary filesystem paths, model tools, or persistent approval endpoints. Do not expose it through a public reverse proxy. The simulator is synthetic, and the Ginkgo adapter only exports a local request. Do not deploy this as a safety-critical, clinical, multi-tenant, or regulated laboratory system.
 
 ## Report a vulnerability privately
 

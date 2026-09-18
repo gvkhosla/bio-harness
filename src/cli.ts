@@ -9,7 +9,7 @@ import { Harness } from "./harness.js";
 import { capabilities, examplePlan } from "./contracts.js";
 import { campaignReport } from "./report.js";
 
-const help = `BIO HARNESS · v0.1
+const help = `BIO HARNESS · v0.2
 Pi-powered scientific campaigns. No live instrument control or paid lab ordering.
 
   bio demo                                  Run two synthetic batches + follow-up
