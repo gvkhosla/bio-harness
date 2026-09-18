@@ -8,6 +8,7 @@ import {
   ModelRuntime,
   SessionManager,
   SettingsManager,
+  type ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
 import { examplePlan } from "./contracts.js";
 import type { Harness } from "./harness.js";
@@ -53,7 +54,9 @@ export function biologyTools(harness: Harness) {
               arguments: { scenario: "original", limit: 10 },
             },
             limits:
-              "No live Ginkgo access, provider authentication, CFPS plan/brief generation, or execution. Responses contain source references and locally computed statistics; raw metadata/code is not exposed.",
+              "No live Ginkgo access, provider authentication, CFPS plan/brief generation in this session, or execution. Responses contain source references and locally computed statistics; raw metadata/code is not exposed.",
+            separateBriefCommand:
+              'bio cfps-brief "Decision question" --scenario original --strategy confirm: a separate restricted Pi session exports an unapproved interpretation; no campaign or execution tools.',
           },
         }),
     }),
@@ -213,13 +216,29 @@ Cite the returned pinned source URL and well/sample JSON pointers. Distinguish s
 Keep excluded replicates and their flags visible; never invent the physical cause of a source flag.
 Local QC is not provider-qualified acceptance; well replicates are not independent biological repeats, and a descriptive rank is not significance.
 When CFPS QC is blocked, report the failure without selecting a winner. Observations remain inspectable, not actionable.
-Do not convert CFPS replay evidence into phenotype plans or imply that CFPS brief generation/approval/execution tools exist.
+Do not convert CFPS replay evidence into phenotype plans or imply that CFPS brief generation/approval/execution tools exist in this session.
+For a saved agent decision brief, the operator can separately run bio cfps-brief "Decision question" --scenario original --strategy confirm. That restricted session has no campaign or execution tools.
 Do not invent literature citations or provider capabilities. There is no literature retrieval tool.
 Do not produce hazardous biological protocols. This harness is for reviewed benign research intents and simulation.
 Budget is a simulation ledger only. No live spending is supported. New drafts never inherit old approvals.`;
 
 export async function createBiologySession(
   harness: Harness,
+  stateDir: string,
+  modelName?: string,
+) {
+  return createScopedSession(
+    biologyTools(harness),
+    systemPrompt,
+    stateDir,
+    modelName,
+  );
+}
+
+/** Shared Pi setup; callers supply an explicit tool allowlist and prompt. No built-ins or extensions. */
+export async function createScopedSession(
+  tools: ToolDefinition[],
+  systemPrompt: string,
   stateDir: string,
   modelName?: string,
 ) {
@@ -275,7 +294,6 @@ export async function createBiologySession(
         "No authenticated model. Set OPENAI_API_KEY / ANTHROPIC_API_KEY, or authenticate with pi /login. Offline demo needs no key.",
       );
   }
-  const tools = biologyTools(harness);
   const { session } = await createAgentSession({
     cwd,
     agentDir: cwd,

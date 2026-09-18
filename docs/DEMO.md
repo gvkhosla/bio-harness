@@ -33,7 +33,7 @@ This is a **replay of Ginkgo's published example return**, not a new experimenta
 - Our descriptive shortlist and local QC policy, **not Ginkgo-qualified scientific acceptance**.
 - No source metadata code is executed or interpreted as agent instructions.
 
-The core walkthrough is deterministic software, not a live model conversation. Pi agent mode remains a separate, optional segment: it now has read-only plate, condition, and well tools for this same pinned CFPS example, alongside the original synthetic campaign tools. It does not yet have CFPS decision-brief or execution tools.
+The core walkthrough is deterministic software, not a live model conversation. Optional Pi segments can inspect the pinned CFPS evidence or generate a cited review interpretation. Evidence inspection uses the general campaign agent; decision-brief generation uses a separate two-tool session with no campaign or execution access. Neither controls a laboratory.
 
 ## Walkthrough
 
@@ -103,7 +103,21 @@ npm run bio -- agent "Inspect the original CFPS plate with bio_cfps_plate, sampl
 
 The tool responses are the evidence; verify the model's summary against the actual tool trace and values. Model calls may incur costs; prompts and tool-returned evidence go to the selected model. The source's embedded metadata/code is not exposed to the agent.
 
-The browser's scenario selector is not synchronized with the agent. Evidence tool calls explicitly name `original` or `control-failure`; no tool changes the source or the browser. A dedicated agent refusal/decision-brief demo is not part of this slice. Retain the offline walkthrough as the fallback.
+The browser's scenario selector is not synchronized with the agent. Evidence tool calls explicitly name `original` or `control-failure`; no tool changes the source or the browser. Retain the offline walkthrough as the fallback.
+
+## Optional live-agent decision brief
+
+```bash
+npm run bio -- cfps-brief "Why not simply choose sample 9 over sample 5? Explain exclusions, uncertainty, and what would change this decision." --scenario original --strategy confirm
+```
+
+Open the printed Markdown path. Start with **Computed observations**, then **Model interpretation**; inspect the references and full-precision appendix. The JSON artifact records the exact evidence packet, model/session attribution, and hashes. Do not commit either artifact or its transcript.
+
+> “The harness—not the model—owns these numbers and exclusions. Pi reasons over that packet and submits a cited interpretation. We check that references resolve and cover the selected evidence; we do not pretend that this proves the interpretation scientifically correct. A scientist still reviews it.”
+
+`confirm` fixes the shortlist at the top two descriptive means; `explore` uses five. The question cannot alter the shortlist or screening policy. The model must inspect the bound context and successfully submit before the operator runner exports anything. The brief is unapproved and non-executable, with no quote or order. This session has **only two tools** and never opens campaign storage.
+
+For rehearsal, `--scenario control-failure` fails locally before a model call or artifact export. That is enforced preflight rejection, **not yet a visible agent-refusal performance**. Browser and CLI scenarios remain independent. Model errors, absent submissions and interruption produce no exported brief; use the deterministic download if the live segment fails.
 
 ## Rehearsal checklist
 
@@ -111,6 +125,7 @@ The browser's scenario selector is not synchronized with the agent. Evidence too
 - [ ] Start the page once, then disconnect the network and repeat the walkthrough.
 - [ ] Practice J21 exclusion, the failure toggle, restoration, and approval proof.
 - [ ] Download one review brief and one evidence report ahead of time.
+- [ ] If using the optional live segment, generate and scientifically review a saved agent brief beforehand; label it as a prior model run when shown.
 - [ ] Check browser zoom on the actual presentation display; 1440px is a useful desktop reference.
 - [ ] Prepare a backup recording with `npm run demo:record` (see below).
 - [ ] Be ready to explain what is computed locally versus supplied by the source.

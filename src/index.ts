@@ -19,3 +19,15 @@ export {
   replayMarkdown,
 } from "./replay.js";
 export type { Replay, ReplayWell, Scenario, Strategy } from "./replay.js";
+export {
+  prepareDecisionPacket,
+  assembleDecisionBrief,
+  decisionArtifact,
+  decisionMarkdown,
+} from "./cfps-decision.js";
+export type {
+  DecisionRequest,
+  DecisionPacket,
+  AgentDecisionBrief,
+  DecisionArtifact,
+} from "./cfps-decision.js";

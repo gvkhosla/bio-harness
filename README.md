@@ -49,17 +49,18 @@ Bio Harness explores the layer between scientific reasoning and laboratory execu
 
 ## What works now
 
-| Capability                                                  | V1 status                                                                              |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Pi agent with twelve domain-specific tools                  | Working; no shell, generic file, approval, or result-import tool                       |
-| Durable campaigns and versioned plan drafts                 | SQLite with transactional mutations and hash-linked audit events                       |
-| Validation and approvals                                    | Explicit controls, sample identities, capacity, simulation budget, exact-plan approval |
-| Offline execution                                           | Seeded toy simulator, randomized 96-well layout, two-batch demo                        |
-| Analysis                                                    | QC checks, descriptive statistics, simulation-only follow-up drafts                    |
-| External execution handoff                                  | Local Ginkgo request bundle and operator-attested result import                        |
-| Visual evidence workbench                                   | Working; public CFPS replay, inspectable wells, review briefs, failure demonstration   |
-| Live provider ordering / instrument control                 | **Not implemented**                                                                    |
-| Qualified biological models, protocols, or biosafety review | **Not supplied by this software**                                                      |
+| Capability                                                  | V1 status                                                                                      |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Pi agent with twelve domain-specific tools                  | Working; no shell, generic file, approval, or result-import tool                               |
+| Durable campaigns and versioned plan drafts                 | SQLite with transactional mutations and hash-linked audit events                               |
+| Validation and approvals                                    | Explicit controls, sample identities, capacity, simulation budget, exact-plan approval         |
+| Offline execution                                           | Seeded toy simulator, randomized 96-well layout, two-batch demo                                |
+| Analysis                                                    | QC checks, descriptive statistics, simulation-only follow-up drafts                            |
+| External execution handoff                                  | Local Ginkgo request bundle and operator-attested result import                                |
+| Visual evidence workbench                                   | Working; public CFPS replay, inspectable wells, review briefs, failure demonstration           |
+| Agent decision brief                                        | Separate restricted Pi session; canonical evidence, cited interpretation, JSON/Markdown export |
+| Live provider ordering / instrument control                 | **Not implemented**                                                                            |
+| Qualified biological models, protocols, or biosafety review | **Not supplied by this software**                                                              |
 
 ## Run it
 
@@ -135,7 +136,24 @@ Each call requires `scenario: "original"` or `"control-failure"`; the agent shou
 
 The tools read only the fixed vendored source, verify its bytes against the pinned manifest, and reuse the workbench's analysis. They do not expose embedded metadata/code, accept arbitrary files/URLs, mutate campaign state, approve anything, generate CFPS briefs, or execute experiments. Source-reported concentrations/calibration are distinguished from locally computed statistics. Inspection-only CFPS tools do not make the entire agent read-only: the existing phenotype campaign tools remain available.
 
-**This slice stops at evidence access.** Agent-generated decision briefs and a dedicated refusal demonstration are follow-on work. The local fixture check is not provider authentication; neither descriptive rank nor well replication establishes statistical significance or biological independence.
+The local fixture check is not provider authentication; neither descriptive rank nor well replication establishes statistical significance or biological independence.
+
+### Generate a reviewable agent decision brief
+
+```bash
+npm run bio -- cfps-brief "Why not simply choose sample 9 over sample 5? Explain exclusions, uncertainty, and what would change this decision." --scenario original --strategy confirm
+```
+
+This starts a **separate restricted Pi session**, not the general campaign agent. It exposes only `bio_cfps_decision_context` and `bio_cfps_submit_decision`: no campaign, approval, import, shell, file, or execution tools. The operator fixes the question, scenario and strategy before the session starts. `confirm` considers the top two descriptive means; `explore` considers the top five. This is a fixed shortlist for review, not an agent-designed experiment or arbitrary condition search.
+
+- The harness supplies measurements, statistics, exclusions, source pointers, attribution, and a hash-bound evidence packet.
+- The model supplies an assessment, recommendation, uncertainties, and evidence that would change its judgment.
+- Submission requires first inspecting the context, the matching packet hash, valid citation IDs, and citation coverage of every selected condition and excluded selected well. Facts cannot be supplied or overwritten through submission arguments.
+- **Citation checks validate references and coverage, not whether the prose is true or supported.** Interpretation remains visibly unreviewed; a scientist must assess it. Prompt instructions against unsupported claims are not semantic enforcement.
+- After a successful session, the CLI—not an agent tool—exports hash-named JSON and Markdown under `.bio/exports/`. The report separates computed observations from interpretation and records local model/session attribution. Hashes and attribution are not signatures or provider authentication.
+- Missing/invalid submission, interruption, or model failure produces no exported brief. Failed QC is rejected before model initialization. The dedicated brief path never opens the campaign database.
+
+Use `--model provider/id`, `--dir PATH`, or `--json` as needed. Authentication, privacy, potential model costs, and the 12-turn / 120-second bound are the same as agent mode. A browser toggle does not change this command's explicit scenario. Transcripts and generated artifacts stay local and gitignored. A dedicated visible agent-refusal walkthrough remains a later slice; the deterministic offline demo is still the meeting fallback.
 
 ## Deterministic workflow without an LLM
 
@@ -238,6 +256,8 @@ src/adapters.ts   Synthetic executor and local Ginkgo handoff builder
 src/analysis.ts   QC and descriptive statistics
 src/agent.ts      Pi SDK session and twelve narrowly scoped tools
 src/cfps-evidence.ts Bounded read-only CFPS projections with source pointers
+src/cfps-decision.ts Canonical evidence packets, reference validation, review artifacts
+src/cfps-decision-agent.ts Restricted Pi interpretation session (two tools)
 src/report.ts     Evidence report
 src/cli.ts        Operator commands, interactive agent, offline demo
 src/replay.ts     Pinned public CFPS result projection and review briefs
@@ -287,6 +307,8 @@ npm run check  # formatting + strict TypeScript + offline tests + build
 Browser checks run separately with `npm run test:browser`; install Chromium once with `npx playwright install chromium`. CI runs both the core suite and Chromium end-to-end checks, including automated accessibility checks at desktop/mobile sizes and the blocked-QC state. `npm run demo:record` creates a local silent backup walkthrough.
 
 Tests are offline, use temporary databases, and never call model or laboratory APIs. They cover lifecycle gating, invalid designs, budget races, concurrent process startup/execution, persistence, audit integrity, result provenance, QC failure, cancellation, CLI behavior, and the actual Pi tool surface.
+
+Decision-brief tests additionally cover immutable facts, citation identity/coverage, missing submissions, successful-submission immutability, export integrity, and QC rejection before model calls. They deliberately demonstrate that resolving references does not certify prose semantics.
 
 Manual live-model smoke test (may incur provider charges):
 

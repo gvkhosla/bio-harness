@@ -12,7 +12,9 @@ This is a direction for contributors, not a promise of dates or capabilities. Di
 
 - [x] Read-only Pi tools for plate, condition, and well inspection, with bounded outputs and exact source pointers.
 
-The replay remains separate from the original phenotype workflow. Pi can inspect its evidence but cannot generate CFPS briefs, approve it, or execute it through these tools. Agent decision briefs and a dedicated refusal demonstration are next slices. It is not a provider-qualified protocol or live execution integration.
+- [x] Separate restricted Pi decision-brief command: harness-owned evidence, model interpretation, reference/coverage checks, JSON/Markdown exports, and model/session attribution.
+
+The replay remains separate from the original phenotype workflow. General-agent CFPS tools are inspection-only; the new `cfps-brief` command uses a separate two-tool session without campaign, approval or execution access. Citation resolution is not semantic validation; interpretation requires scientific review. Failed QC blocks brief generation before a model call. A dedicated visible agent-refusal demonstration is the next slice. None of this is a provider-qualified protocol or live execution integration.
 
 ## Foundation: v0.1
 

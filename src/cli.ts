@@ -30,6 +30,7 @@ Pi-powered scientific campaigns. No live instrument control or paid lab ordering
   bio report CAMPAIGN                        Write a Markdown campaign report
   bio audit CAMPAIGN                         Verify hash-linked event history
   bio agent "Research request"               Pi agent, or interactive when no request
+  bio cfps-brief "Decision question"          Restricted Pi decision brief (--scenario original --strategy confirm|explore)
 
 Options: --dir PATH (default .bio or BIO_HOME), --model provider/id, --json
 Agent uses Pi auth or provider API-key environment variables. API calls may cost money.
@@ -64,6 +65,8 @@ async function main() {
       by: { type: "string" },
       budget: { type: "string", default: "10000" },
       backend: { type: "string", default: "simulator" },
+      scenario: { type: "string", default: "original" },
+      strategy: { type: "string", default: "confirm" },
       json: { type: "boolean", default: false },
       help: { type: "boolean", short: "h" },
     },
@@ -90,6 +93,46 @@ async function main() {
     return;
   }
   const stateDir = resolve(values.dir ?? process.env.BIO_HOME ?? ".bio");
+  if (command === "cfps-brief") {
+    const question = required(first, "decision question");
+    if (positionals.length !== 2)
+      throw new Error("Quote the decision question as a single argument");
+    const { generateDecisionBrief } = await import("./cfps-decision-agent.js");
+    const { decisionMarkdown } = await import("./cfps-decision.js");
+    console.error(
+      "CFPS brief: model calls may incur costs; your question and public evidence go to the selected model. No campaign or execution tools.",
+    );
+    const artifact = await generateDecisionBrief(
+      { question, scenario: values.scenario, strategy: values.strategy },
+      stateDir,
+      values.model,
+    );
+    const name = `cfps-decision-${artifact.artifactHash}`;
+    const jsonPath = saveArtifact(
+      stateDir,
+      `${name}.json`,
+      JSON.stringify(artifact, null, 2) + "\n",
+    );
+    const markdownPath = saveArtifact(
+      stateDir,
+      `${name}.md`,
+      decisionMarkdown(artifact),
+    );
+    const result = {
+      status: artifact.brief.status,
+      artifactHash: artifact.artifactHash,
+      json: jsonPath,
+      markdown: markdownPath,
+      generation: artifact.generation,
+      validation: artifact.brief.validation,
+    };
+    if (values.json) console.log(JSON.stringify(result, null, 2));
+    else
+      console.log(
+        `\nCFPS decision brief · UNAPPROVED\n${markdownPath}\n${jsonPath}\n\nEvidence references resolved. Model interpretation requires human review. No order sent.\n`,
+      );
+    return;
+  }
   const store = new Store(join(stateDir, "campaigns.sqlite"));
   const harness = new Harness(store);
   const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
