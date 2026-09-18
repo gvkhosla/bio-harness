@@ -25,6 +25,16 @@ test("evidence selection, provenance, downloads, gate proof and QC recovery work
   await expect(page.locator("#well-detail")).toContainText(
     "Excluded measurement",
   );
+  await expect(page.locator("#well-detail")).toContainText(
+    "exclude-source-flag",
+  );
+  await expect(page.locator("#well-detail")).toContainText(
+    "Unknown: the physical cause",
+  );
+  await expect(page.locator("#well-detail")).toContainText("3 of 4 eligible");
+  await expect(page.locator("#policy-version")).toContainText(
+    "cfps-local-screen v1",
+  );
   await page.getByRole("button", { name: "Sample 5", exact: true }).click();
   await expect(page.locator("#well-detail")).toContainText("4 of 4 eligible");
   await page.getByRole("button", { name: "Show all 71 candidates" }).click();

@@ -41,6 +41,7 @@ function context(replay: Replay) {
       fluorescence: "source raw reading; unit not specified in the fixture",
     },
     qc: replay.qc,
+    software: replay.software,
     statisticsOrigin:
       "Bio Harness descriptive statistics over locally eligible observations; not provider-supplied statistics or significance tests.",
     limitations: replay.limitations,
@@ -60,13 +61,8 @@ function observation(well: ReplayWell) {
         ? `/reagent_flags/flags/${well.well}`
         : null,
     },
-    derivedFields: ["formulationHash", "eligible", "demoFlags"],
-    exclusionReasons: [
-      ...well.sourceFlags.map((flag) => `Source flag: ${flag}`),
-      ...well.demoFlags,
-      ...(well.concentration === null ? ["Missing concentration"] : []),
-      ...(well.fluorescence === null ? ["Missing fluorescence"] : []),
-    ],
+    derivedFields: ["formulationHash", "eligible", "demoFlags", "screen"],
+    exclusionReasons: well.screen.reasons.map((reason) => reason.explanation),
   };
 }
 

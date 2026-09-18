@@ -1,5 +1,7 @@
 import { Type } from "typebox";
 import { DecisionTrace, traceError } from "./decision-trace.js";
+import { cfpsPolicy } from "./cfps-policy.js";
+import { analysisIdentity } from "./analysis-identity.js";
 import { defineTool } from "@earendil-works/pi-coding-agent";
 import { createScopedSession, promptWithLimits } from "./agent.js";
 import {
@@ -145,7 +147,11 @@ export async function generateDecisionBrief(
   trace?: DecisionTrace,
 ) {
   // QC/request preflight happens before model initialization or paid calls.
-  const checked = trace?.start("policy-check", input);
+  const checked = trace?.start("policy-check", {
+    request: input,
+    policy: cfpsPolicy(),
+    software: analysisIdentity(),
+  });
   let run: ReturnType<typeof createDecisionRun>;
   try {
     run = createDecisionRun(input);

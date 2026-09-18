@@ -90,6 +90,7 @@ function inspect(ref, focus = false) {
         exclusionReasons: fact.exclusionReasons,
         demoFlags: fact.demoFlags,
         formulationHash: fact.formulationHash,
+        ruleDecisions: fact.screen ?? "Not recorded by this historical version",
       }),
     );
   } else
@@ -103,6 +104,15 @@ function inspect(ref, focus = false) {
       inspectJson("Recorded evidence", fact),
     );
   nodes.push(
+    inspectJson(
+      "Local QC policy identity",
+      artifact.brief.packet.policy ?? "Not recorded by this historical version",
+    ),
+    inspectJson(
+      "Analysis module identity",
+      artifact.brief.packet.software ??
+        "Not recorded by this historical version",
+    ),
     inspectJson(
       "Pinned source attribution and integrity limits",
       artifact.brief.packet.source,

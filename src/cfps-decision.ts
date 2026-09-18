@@ -109,6 +109,8 @@ export function prepareDecisionPacket(input: unknown) {
   const body = {
     format: "bio-harness.cfps-decision-packet.v1",
     request,
+    policy: replay.qc.policyManifest,
+    software: replay.software,
     source: {
       url: replay.source.url,
       sha256: replay.source.sha256,
@@ -240,6 +242,10 @@ export function decisionMarkdown(artifact: DecisionArtifact) {
     `Question: ${plain(packet.request.question)}`,
     `Scenario: ${packet.request.scenario}`,
     `Direction: ${packet.request.strategy}`,
+    `Local policy: ${packet.policy.id} v${packet.policy.version} · ${packet.policy.policyHash}`,
+    `Analysis contract: ${packet.software.analysisContract} · package ${packet.software.packageVersion}`,
+    ...packet.software.files.map((f) => `Module ${f.file}: ${f.sha256}`),
+    packet.software.boundary,
     "",
     `Source: ${packet.source.url}`,
     `Attribution: ${plain(packet.source.attribution)} · ${plain(packet.source.license)}`,

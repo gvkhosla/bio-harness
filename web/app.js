@@ -159,6 +159,47 @@ function selectWell(coordinate) {
         "warning",
       ),
     );
+  detail.append(make("h3", "Why this screening decision?"));
+  const reasons = well.screen.reasons;
+  if (reasons.length) {
+    const list = make("ul");
+    for (const reason of reasons) {
+      const rule = report.qc.policyManifest.rules.find(
+        (r) => r.id === reason.ruleId,
+      );
+      list.append(
+        make(
+          "li",
+          `${reason.explanation} → ${reason.ruleId}: ${rule?.statement ?? "Unknown rule"}`,
+        ),
+      );
+    }
+    detail.append(list);
+  } else
+    detail.append(
+      make(
+        "p",
+        "No exclusion rule triggered. Eligibility is a local screen, not proof of assay validity.",
+      ),
+    );
+  if (well.screen.unknownCause)
+    detail.append(
+      make(
+        "p",
+        "Unknown: the physical cause of this source flag. Do not infer a mechanism from its label.",
+        "warning",
+      ),
+    );
+  const pointers = make("details");
+  pointers.append(
+    make("summary", "Trace to source fields"),
+    make("code", `/samples/${well.column * 16 + well.row}`),
+    make("code", `/concentration_results/concentration_g_L/${well.well}`),
+    make("code", `/fluorescence_results/fluorescence/${well.well}`),
+  );
+  if (well.sourceFlags.length)
+    pointers.append(make("code", `/reagent_flags/flags/${well.well}`));
+  detail.append(pointers);
   if (condition) {
     detail.append(make("h3", "Trace every replicate"));
     const replicateButtons = make("div", undefined, "replicates");
@@ -292,6 +333,17 @@ async function load(nextScenario = scenario) {
     $("blocked").hidden = !blocked;
     $("blocked-reason").textContent = report.qc.problems.join(" ");
     $("policy").textContent = report.qc.policy;
+    $("policy-version").textContent =
+      `${report.qc.policyManifest.id} v${report.qc.policyManifest.version} · analysis ${report.software.analysisContract}`;
+    $("policy-details").textContent = JSON.stringify(
+      {
+        policy: report.qc.policyManifest,
+        checks: report.qc.checks,
+        software: report.software,
+      },
+      null,
+      2,
+    );
     $("calibration").textContent =
       `Source-reported calibration: R² ${fmt(report.calibration.r2, 4)}; MAPE ${(report.calibration.mape * 100).toFixed(2)}%. Not recomputed here.`;
     $("control-summary").textContent =

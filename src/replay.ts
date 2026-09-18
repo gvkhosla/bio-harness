@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { z } from "zod";
 import { hash } from "./contracts.js";
+import { cfpsPolicy, screenMeasurement } from "./cfps-policy.js";
+import { analysisIdentity } from "./analysis-identity.js";
 
 const finite = z.number().finite();
 const readings = z.record(finite.nullable());
@@ -58,6 +60,7 @@ export type ReplayWell = {
   sourceFlags: string[];
   demoFlags: string[];
   eligible: boolean;
+  screen: ReturnType<typeof screenMeasurement>;
 };
 export function summarize(values: number[]) {
   const n = values.length;
@@ -76,6 +79,7 @@ export function parseReplay(
 ) {
   if (!["original", "control-failure"].includes(scenario))
     throw new Error("Unknown replay scenario");
+  const policy = cfpsPolicy();
   const manifest = manifestSchema.parse(manifestInput);
   if (
     bytes.length !== manifest.bytes ||
@@ -116,6 +120,12 @@ export function parseReplay(
         : [];
     const concentration = plate.concentration_results.concentration_g_L[well]!;
     const fluorescence = plate.fluorescence_results.fluorescence[well]!;
+    const screen = screenMeasurement({
+      concentration,
+      fluorescence,
+      sourceFlags,
+      demoFlags,
+    });
     return {
       well,
       row,
@@ -127,11 +137,8 @@ export function parseReplay(
       fluorescence,
       sourceFlags,
       demoFlags,
-      eligible:
-        concentration !== null &&
-        fluorescence !== null &&
-        !sourceFlags.length &&
-        !demoFlags.length,
+      eligible: screen.eligible,
+      screen,
     };
   });
   const groups = new Map<string, ReplayWell[]>();
@@ -172,16 +179,16 @@ export function parseReplay(
     wells: reference.map((w) => w.well),
   };
   const problems: string[] = [];
-  if (control.n < 3)
+  if (control.n < policy.minimumEligibleWells)
     problems.push(
       "Fewer than three eligible target-control wells; candidate ranking and follow-up briefs are blocked.",
     );
-  if (plate.standards_metrics.r2 < 0.98)
+  if (plate.standards_metrics.r2 < policy.minimumCalibrationR2)
     problems.push(
       "Source-reported calibration R² is below the demo review threshold of 0.98.",
     );
   const candidates = conditions
-    .filter((c) => c.n >= 3)
+    .filter((c) => c.n >= policy.minimumEligibleWells)
     .sort((a, b) => b.mean! - a.mean! || a.sampleId.localeCompare(b.sampleId));
   if (!candidates.length)
     problems.push("No experimental condition has three eligible measurements.");
@@ -189,6 +196,7 @@ export function parseReplay(
   return {
     format: "bio-harness.cfps-replay.v1" as const,
     scenario,
+    software: analysisIdentity(),
     source: {
       ...manifest,
       url: `${manifest.repository}/blob/${manifest.commit}/${manifest.path}`,
@@ -214,9 +222,34 @@ export function parseReplay(
       problems,
       sourceFlaggedWells: wells.filter((w) => w.sourceFlags.length).length,
       injectedWells: wells.filter((w) => w.demoFlags.length).length,
-      excludedConditions: conditions.filter((c) => c.n < 3).length,
-      policy:
-        "Demo screening policy, not Ginkgo acceptance: exclude every source-flagged or missing measurement; require ≥3 remaining wells per candidate and named target control, plus source-reported calibration R² ≥0.98. No negative-control separation or assay qualification is inferred.",
+      excludedConditions: conditions.filter(
+        (c) => c.n < policy.minimumEligibleWells,
+      ).length,
+      policy: policy.summary,
+      policyManifest: policy,
+      checks: [
+        {
+          ruleId: "minimum-replication",
+          target: "target-control",
+          observed: control.n,
+          minimum: policy.minimumEligibleWells,
+          passed: control.n >= policy.minimumEligibleWells,
+        },
+        {
+          ruleId: "calibration-r2",
+          target: "source-reported calibration",
+          observed: plate.standards_metrics.r2,
+          minimum: policy.minimumCalibrationR2,
+          passed: plate.standards_metrics.r2 >= policy.minimumCalibrationR2,
+        },
+        {
+          ruleId: "minimum-replication",
+          target: "eligible candidate groups",
+          observed: candidates.length,
+          minimum: 1,
+          passed: candidates.length > 0,
+        },
+      ],
     },
     limitations: [
       "Published example data; no experiment was performed by Bio Harness. Provider run ID is null in the source.",
@@ -288,6 +321,8 @@ export function decisionBrief(replay: Replay, strategy: Strategy) {
       "No order sent. Not a Ginkgo API payload or executable protocol. A provider-qualified plan and new operator approval are required before any future execution.",
     estimate: null,
     qcPolicy: replay.qc.policy,
+    policyManifest: replay.qc.policyManifest,
+    software: replay.software,
     limitations: replay.limitations,
   };
   return { ...body, briefHash: hash(body) };
@@ -305,6 +340,10 @@ export function replayMarkdown(replay: Replay) {
     `SHA-256: ${replay.source.sha256}`,
     `Scenario: ${replay.scenario}`,
     `Screen: ${replay.qc.status}`,
+    `Policy: ${replay.qc.policyManifest.id} v${replay.qc.policyManifest.version} · ${replay.qc.policyManifest.policyHash}`,
+    `Analysis: ${replay.software.analysisContract} · package ${replay.software.packageVersion}`,
+    "Local module file hashes (not signed execution proof):",
+    ...replay.software.files.map((f) => `- ${f.file}: ${f.sha256}`),
     "",
     replay.qc.policy,
     "",

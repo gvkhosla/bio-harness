@@ -283,6 +283,23 @@ code {
   font-size: 11px;
   margin-top: 8px;
 }
+#policy-details {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 420px;
+  overflow: auto;
+  font-size: 12px;
+}
+#well-detail ul {
+  padding-left: 18px;
+  font-size: 12px;
+}
+#well-detail li {
+  margin: 10px 0;
+}
+#policy-version {
+  overflow-wrap: anywhere;
+}
 #plate-id,
 #source-commit {
   overflow-wrap: anywhere;

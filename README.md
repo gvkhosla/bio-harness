@@ -165,6 +165,12 @@ The viewer separates recorded published observations, harness calculations, mode
 
 Human review is a **separate attachment**, bound to the exact artifact hash. For each statement, record supported/unsupported/unclear or leave it unreviewed, with a rationale and unresolved concerns. Download/reopen the review JSON in the viewer. Reviewer identity is self-attested, not authenticated; no review status authorizes execution or changes the original evidence. Partially reviewed artifacts remain explicitly partial. Historical records are integrity-checked, not silently recomputed under today's analysis policy.
 
+### Explain the screening policy
+
+Each well now records triggered rule IDs, source-versus-injected reasons, and whether a source flag's physical cause is unknown. The inspector shows the rule, original source pointers, eligible count, excluded wells, and descriptive mean/SD. Missing readings stay missing; no invented confidence percentage is supplied.
+
+The replay, evidence tools and decision packets carry the same **versioned local QC policy and policy hash**, with explicit control/calibration checks. Decision packets and reports also record the analysis contract, package version and hashes of the fixed local analysis module files. These file hashes are not signed proof of loaded bytecode; source TypeScript and built JavaScript differ. Historic review attachments remain bound to their original artifacts, never silently recalculated under newer policy. This remains our demo screening policy, not Ginkgo acceptance.
+
 ## Deterministic workflow without an LLM
 
 ```bash
